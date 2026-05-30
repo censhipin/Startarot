@@ -15,7 +15,7 @@ const CARDS = {
   hierophant: 'https://upload.wikimedia.org/wikipedia/commons/8/83/RWS_Tarot_05_Hierophant.jpg',
   lovers: 'https://upload.wikimedia.org/wikipedia/commons/d/db/RWS_Tarot_06_Lovers.jpg',
   chariot: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg',
-  strength: 'https://upload.wikimedia.org/wikipedia/commons/2/2c/RWS_Tarot_08_Strength.jpg',
+  strength: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg',
   hermit: 'https://upload.wikimedia.org/wikipedia/commons/6/68/RWS_Tarot_09_Hermit.jpg',
   wheel: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/RWS_Tarot_10_Wheel.jpg',
   justice: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg',
@@ -29,12 +29,12 @@ const CARDS = {
   judgement: 'https://upload.wikimedia.org/wikipedia/commons/0/03/RWS_Tarot_20_Judgement.jpg',
   world: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg',
 }
-// 小阿卡纳示例
+// 小阿卡纳（用同风格RWS大阿卡纳替代，Wikimedia上无小阿卡纳公有领域图）
 const SUIT_EXAMPLES = {
-  wands: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/RWS_Tarot_01_Wands.jpg',
-  cups: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/RWS_Tarot_01_Cups.jpg',
-  swords: 'https://upload.wikimedia.org/wikipedia/commons/2/28/RWS_Tarot_01_Swords.jpg',
-  pentacles: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_01_Pentacles.jpg',
+  wands: CARDS.chariot,
+  cups: CARDS.moon,
+  swords: CARDS.justice,
+  pentacles: CARDS.star,
 }
 
 // 3D轮播用卡牌（5张经典大阿卡纳）
