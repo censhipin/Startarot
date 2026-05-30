@@ -437,13 +437,11 @@ function NavBar() {
 
 /* ================================ HERO · 景深卡牌漂浮阵 + 鼠标跟随 ================================ */
 /* ================================
- HERO · 3D旋转卡牌圈（JS计算2D位置）
+ HERO · 横向滑动卡牌
  ================================ */
 function HeroSection() {
-  const [angle, setAngle] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const animRef = useRef(null)
-  const [selectedIdx, setSelectedIdx] = useState(0)
+  const [hoverIdx, setHoverIdx] = useState(null)
+  const scrollRef = useRef(null)
 
   const cards = [
     { src: CARDS.fool, name:'愚人', num:'0', en:'The Fool', mean:'新的开始 · 冒险 · 纯真' },
@@ -452,30 +450,6 @@ function HeroSection() {
     { src: CARDS.star, name:'星星', num:'XVII', en:'The Star', mean:'希望 · 灵感 · 治愈' },
     { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
-
-  const step = 360 / cards.length
-
-  // 动画循环：角度持续增加
-  useEffect(() => {
-    if (paused) return
-    let last = 0
-    function animate(time) {
-      if (!last) last = time
-      const delta = time - last
-      last = time
-      setAngle(prev => (prev + delta * 0.018) % 360)
-      animRef.current = requestAnimationFrame(animate)
-    }
-    animRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animRef.current)
-  }, [paused])
-
-  // 计算当前面向用户的卡牌
-  useEffect(() => {
-    const normalized = ((angle % 360) + 360) % 360
-    const idx = Math.round(normalized / step) % cards.length
-    setSelectedIdx(idx)
-  }, [angle])
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -522,64 +496,70 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 3D旋转卡牌圈 */}
-          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px]"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}>
-            <div className="scene3d relative select-none"
-              style={{ width:'100%', height:400 }}>
-
-              {/* 中心环境光晕 */}
-              <div className="absolute pointer-events-none"
-                style={{
-                  left:'50%', top:'50%', width:300, height:300,
-                  transform:'translate(-50%,-50%)',
-                  background:'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 50%)',
-                  zIndex:0,
-                }}/>
-
-              {/* 3D旋转架 - 锥形圈 */}
-              <div className="carousel3d"
-                style={{ transform: `rotateY(${angle}deg)` }}>
-                {cards.map((card, i) => {
-                  const cardAngle = i * step
-                  // 锥形：底部收窄（radius小+靠下），顶部展开（radius大+靠上）
-                  const level = i / (cards.length - 1) // 0~1 底部到顶部
-                  const coneRadius = 200 + level * 130   // 底部200px → 顶部330px
-                  const coneY = 40 - level * 80          // 底部下移40px → 顶部上移40px
-                  return (
-                    <div key={card.num}
-                      className="card3d"
-                      style={{
-                        width: 180,
-                        height: 252,
-                        transform: `rotateY(${cardAngle}deg) translateZ(${coneRadius}px) translateY(${coneY}px)`,
-                      }}>
-                      <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
+          {/* 右侧 · 横向滑动卡牌轮播 */}
+          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px] max-lg:mb-6 overflow-hidden"
+            style={{ height:380 }}>
+            {/* 中心辉光 */}
+            <div className="absolute pointer-events-none"
+              style={{
+                left:'50%', top:'180px', width:280, height:280,
+                transform:'translate(-50%,-50%)',
+                background:'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 50%)',
+                zIndex:0,
+              }}/>
+            {/* 滑动容器 */}
+            <div ref={scrollRef}
+              className="overflow-x-auto select-none"
+              style={{
+                scrollbarWidth:'none', msOverflowStyle:'none',
+                scrollSnapType:'x mandatory',
+                WebkitOverflowScrolling:'touch',
+              }}
+              onMouseEnter={() => setHoverIdx(null)}>
+              <div className="inline-flex gap-5 py-4 px-2"
+                style={{ scrollSnapAlign:'center' }}>
+                {cards.map((card, i) => (
+                  <div key={card.num}
+                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
+                    style={{
+                      width: 180,
+                      height: 252,
+                      border: hoverIdx === i
+                        ? '2px solid rgba(212,175,55,0.35)'
+                        : '1px solid rgba(212,175,55,0.08)',
+                      boxShadow: hoverIdx === i
+                        ? '0 0 40px rgba(212,175,55,0.08), 0 10px 30px rgba(0,0,0,0.4)'
+                        : '0 4px 12px rgba(0,0,0,0.3)',
+                      transform: hoverIdx === i ? 'translateY(-6px)' : 'none',
+                      scrollSnapAlign:'center',
+                    }}
+                    onMouseEnter={() => setHoverIdx(i)}
+                    onMouseLeave={() => setHoverIdx(null)}>
+                    <div className="w-full h-full relative">
+                      <img src={card.src} alt={card.name}
+                        draggable={false}
+                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                      {/* 悬停时显示卡牌信息 */}
+                      <div className="absolute bottom-0 left-0 right-0 text-center transition-all duration-300"
                         style={{
-                          border: '1px solid rgba(212,175,55,0.15)',
-                          boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+                          padding: '12px 10px',
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)',
+                          opacity: hoverIdx === i ? 1 : 0,
+                          transform: hoverIdx === i ? 'translateY(0)' : 'translateY(8px)',
                         }}>
-                        <img src={card.src} alt={card.name}
-                          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                        <p className="text-xs tracking-[2px]" style={{ color:'#D4AF37' }}>
+                          {card.num} · {card.en}
+                        </p>
+                        <p className="text-sm f-serif font-bold" style={{ color:'#FFF8E7' }}>
+                          {card.name}
+                        </p>
+                        <p className="text-[10px] mt-0.5" style={{ color:'#7A6D8A' }}>
+                          {card.mean}
+                        </p>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
-
-              {/* 当前卡牌信息 */}
-              <div className="absolute left-1/2 -translate-x-1/2 text-center"
-                style={{ bottom: 20 }}>
-                <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
-                  {cards[selectedIdx].num} · {cards[selectedIdx].en}
-                </p>
-                <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
-                  {cards[selectedIdx].name}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
-                  {cards[selectedIdx].mean}
-                </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
