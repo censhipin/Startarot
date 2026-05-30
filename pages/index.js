@@ -358,14 +358,22 @@ function HeroSection() {
     return () => cancelAnimationFrame(id)
   }, [])
 
+  const W_MAIN = 440 // 主牌宽度（原220x2）
+  const W_BACK = Math.round(W_MAIN * 0.6) // 辅助牌缩小40%
+
   const cards = [
-    { id:'left', src:'/zodiac-aries.jpg', name:'白羊座', en:'Aries',
-      top:26, left:12, w:130, blur:2.5, z:0, floatY:6, floatX:3, dur:5.0, delay:1.5, tiltY:-3, tiltX:4, follow:0.4 },
-    { id:'main', src:CARDS.star, name:'星星', en:'The Star',
-      top:14, left:50, w:220, blur:0, z:2, floatY:3, floatX:1.5, dur:4.0, delay:0, tiltY:-2, tiltX:1, follow:0.7 },
     { id:'right', src:'/zodiac-taurus.jpg', name:'金牛座', en:'Taurus',
-      top:30, left:82, w:110, blur:3, z:0, floatY:5, floatX:-2.5, dur:5.5, delay:2.0, tiltY:4, tiltX:-3, follow:0.35 },
+      top:52, left:70, w:W_BACK, blur:2, z:0, opacity:0.4,
+      floatY:4, tilt:3, dur:11, delay:2.5 },
+    { id:'main', src:CARDS.star, name:'星星', en:'The Star',
+      top:50, left:50, w:W_MAIN, blur:0, z:2, opacity:1,
+      floatY:3, tilt:-1.5, dur:10, delay:0 },
+    { id:'left', src:'/zodiac-aries.jpg', name:'白羊座', en:'Aries',
+      top:55, left:30, w:W_BACK, blur:2, z:0, opacity:0.35,
+      floatY:-4, tilt:2, dur:12, delay:1.5 },
   ]
+
+  const FLEX_RIGHT = 'flex-[0_0_520px] max-lg:flex-[0_0_300px] max-lg:mb-8'
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -412,23 +420,24 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 三卡悬浮阵 */}
-          <div className="flex-[0_0_380px] max-lg:order-1 max-lg:flex-[0_0_260px] max-lg:mb-8"
+          {/* 右侧 · 主牌居中 + 后方辅助牌景深 */}
+          <div className={FLEX_RIGHT}
                ref={containerRef}
                onMouseMove={handleMouseMove}
                onMouseLeave={() => { mousePos.current = { x:0, y:0 }; setHoveredCard(null) }}>
-            <div className="relative select-none" style={{ width:'100%', height:480, perspective:1200, transformStyle:'preserve-3d' }}>
-              {/* 主牌光晕 */}
+            <div className="relative select-none mx-auto" style={{ width:'100%', maxWidth:520, height:560, perspective:800, transformStyle:'preserve-3d' }}>
+              {/* 主牌金色光晕 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'45%', width:300, height:400,
+                  left:'50%', top:'50%', width:360, height:500,
                   transform:'translate(-50%,-50%)',
-                  background:'radial-gradient(ellipse, rgba(212,175,55,0.06) 0%, transparent 60%)',
+                  background:'radial-gradient(ellipse, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.03) 30%, transparent 65%)',
                   zIndex:0,
                 }}/>
+              {/* 紫色环境光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'30%', top:'55%', width:200, height:200,
+                  left:'45%', top:'55%', width:250, height:300,
                   transform:'translate(-50%,-50%)',
                   background:'radial-gradient(circle, rgba(122,77,255,0.04) 0%, transparent 60%)',
                   zIndex:0,
@@ -439,41 +448,43 @@ function HeroSection() {
                 return (
                   <div key={card.id}
                     className="absolute"
-                    style={{ left:`${card.left}%`, top:`${card.top}%`, zIndex: card.z + 4, transform:'translate(-50%,-50%)' }}>
-                    {/* 鼠标跟随层 */}
-                    <div ref={el => followRefs.current[card.id] = el}
-                      className="will-change-transform">
-                      {/* 卡牌本体 */}
+                    style={{
+                      left:'50%', top:`${card.top}%`,
+                      zIndex: card.z + 4,
+                      transform:'translate(-50%,-50%)',
+                    }}>
+                    <div ref={el => followRefs.current[card.id] = el} className="will-change-transform">
                       <div
                         className="rounded-xl overflow-hidden cursor-pointer transition-all duration-700"
                         style={{
                           width: card.w,
-                          height: card.w * 1.4,
-                          filter: `blur(${card.blur}px) brightness(${card.id === 'main' ? 1 : 0.5})`,
+                          height: Math.round(card.w * 1.4),
+                          filter: `blur(${card.blur}px) brightness(${card.id === 'main' ? 1 : 0.45})`,
+                          opacity: card.opacity,
                           animation: `${animName} ${card.dur}s ease-in-out ${card.delay}s infinite`,
                           border: hoveredCard === card.id
                             ? '2px solid rgba(212,175,55,0.5)'
                             : card.id === 'main'
-                              ? '1.5px solid rgba(212,175,55,0.2)'
-                              : '1px solid rgba(212,175,55,0.08)',
+                              ? '1.5px solid rgba(212,175,55,0.18)'
+                              : '1px solid rgba(212,175,55,0.06)',
                           boxShadow: hoveredCard === card.id
-                            ? '0 0 60px rgba(212,175,55,0.15), 0 0 120px rgba(212,175,55,0.05)'
+                            ? '0 0 80px rgba(212,175,55,0.15), 0 0 150px rgba(212,175,55,0.05)'
                             : card.id === 'main'
-                              ? '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(212,175,55,0.08)'
+                              ? '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.06)'
                               : '0 8px 20px rgba(0,0,0,0.4)',
                         }}
                         onMouseEnter={() => setHoveredCard(card.id)}
                         onMouseLeave={() => setHoveredCard(null)}>
                         <img src={card.src} alt={card.name}
                           style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
-                        <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center"
+                        <div className="absolute bottom-0 left-0 right-0 p-3 text-center"
                           style={{
                             background:'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                            opacity: hoveredCard === card.id || card.id === 'main' ? 1 : 0.5,
+                            opacity: hoveredCard === card.id || card.id === 'main' ? 1 : 0.4,
                             transition:'opacity 0.4s',
                           }}>
-                          <p className="text-xs font-bold f-serif" style={{ color:'#FFF8E7' }}>{card.name}</p>
-                          <p className="text-[9px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{card.en}</p>
+                          <p className="text-sm f-serif font-bold" style={{ color:'#FFF8E7' }}>{card.name}</p>
+                          <p className="text-[10px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{card.en}</p>
                         </div>
                       </div>
                     </div>
@@ -481,12 +492,11 @@ function HeroSection() {
                 )
               })}
 
-              {/* 注入关键帧 */}
               <style dangerouslySetInnerHTML={{ __html: cards.map((c, i) => `
                 @keyframes heroCard${i} {
-                  0%,100% { transform: translate(-50%,-50%) translateY(0px) translateX(0px) rotateY(${c.tiltY}deg) rotateX(${c.tiltX}deg); }
-                  33% { transform: translate(-50%,-50%) translateY(${-c.floatY}px) translateX(${c.floatX}px) rotateY(${c.tiltY + c.tiltY * 0.6}deg) rotateX(${c.tiltX + c.tiltX * 0.6}deg); }
-                  66% { transform: translate(-50%,-50%) translateY(${-c.floatY * 0.5}px) translateX(${-c.floatX * 0.5}px) rotateY(${c.tiltY - c.tiltY * 0.4}deg) rotateX(${c.tiltX - c.tiltX * 0.4}deg); }
+                  0%,100% { transform: translate(-50%,-50%) translateY(0px) translateX(0px) rotateY(${c.tilt}deg); }
+                  33% { transform: translate(-50%,-50%) translateY(${-c.floatY}px) translateX(${c.floatY * 0.3}px) rotateY(${c.tilt + 1}deg); }
+                  66% { transform: translate(-50%,-50%) translateY(${c.floatY * 0.5}px) translateX(${-c.floatY * 0.2}px) rotateY(${c.tilt - 0.8}deg); }
                 }
               `).join('') }}/>
             </div>
