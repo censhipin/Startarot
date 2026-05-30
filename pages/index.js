@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
 // ==============================
 // 1. 公有领域维特塔罗牌面 (Wikimedia Commons)
@@ -340,41 +341,129 @@ function NavBar() {
 }
 
 /* ================================================================
-   HERO · 3D立体旋转卡牌
+   HERO · 悬浮卡牌阵（漂浮在宇宙中的神秘塔罗牌阵）
    ================================================================ */
-function HeroSection() {
-  const [angle, setAngle] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const animRef = useRef(null)
-  const lastTime = useRef(0)
-  const containerRef = useRef(null)
-  const [selectedIdx, setSelectedIdx] = useState(0)
 
-  const animate = useCallback((time) => {
-    if (!lastTime.current) lastTime.current = time
-    const delta = time - lastTime.current
-    lastTime.current = time
-    if (!paused) {
-      setAngle(prev => (prev + delta * 0.015) % 360)
+const floatingCards = [
+  {
+    id: 'aries', src: '/zodiac-aries.jpg',
+    name: '白羊座', en: 'Aries',
+    // 布局位置 (百分比)
+    posX: 50, posY: 8,
+    // 景深参数
+    scale: 0.42, blur: 3.5, zLayer: 0,
+    // 漂浮幅度
+    floatY: 8, floatX: 3,
+    // 倾斜幅度
+    tiltY: 4, tiltX: -3,
+    // 动画周期
+    dur: 5.5, delay: 0,
+    // 鼠标跟随强度
+    follow: 0.25,
+  },
+  {
+    id: 'star', src: CARDS.star,
+    name: '星星', en: 'The Star',
+    posX: 15, posY: 28,
+    scale: 0.55, blur: 1.5, zLayer: 1,
+    floatY: 10, floatX: 4,
+    tiltY: -3, tiltX: 5,
+    dur: 4.8, delay: 1.2,
+    follow: 0.55,
+  },
+  {
+    id: 'taurus', src: '/zodiac-taurus.jpg',
+    name: '金牛座', en: 'Taurus',
+    posX: 85, posY: 30,
+    scale: 0.5, blur: 2, zLayer: 1,
+    floatY: 7, floatX: -4,
+    tiltY: 5, tiltX: 4,
+    dur: 6.0, delay: 2.0,
+    follow: 0.45,
+  },
+  {
+    id: 'aquarius', src: '/zodiac-aquarius.jpg',
+    name: '水瓶座', en: 'Aquarius',
+    posX: 50, posY: 46,
+    scale: 0.88, blur: 0, zLayer: 2,
+    floatY: 4, floatX: 2,
+    tiltY: -2, tiltX: 3,
+    dur: 4.2, delay: 0.5,
+    follow: 1.0,
+  },
+  {
+    id: 'moon', src: CARDS.moon,
+    name: '月亮', en: 'The Moon',
+    posX: 72, posY: 74,
+    scale: 0.34, blur: 4, zLayer: 0,
+    floatY: 9, floatX: -3,
+    tiltY: -5, tiltX: -3,
+    dur: 6.5, delay: 2.8,
+    follow: 0.2,
+  },
+]
+
+// 生成每个卡牌的浮动关键帧动画
+const cardAnimations = floatingCards.map((c, i) => `
+  @keyframes heroFloat${i} {
+    0%, 100% {
+      transform: translate(-50%, -50%)
+                 translateY(0px) translateX(0px)
+                 rotateY(${c.tiltY}deg) rotateX(${c.tiltX}deg);
     }
-    animRef.current = requestAnimationFrame(animate)
-  }, [paused])
+    33% {
+      transform: translate(-50%, -50%)
+                 translateY(${-c.floatY}px) translateX(${c.floatX}px)
+                 rotateY(${c.tiltY + c.tiltY * 0.6}deg) rotateX(${c.tiltX + c.tiltX * 0.6}deg);
+    }
+    66% {
+      transform: translate(-50%, -50%)
+                 translateY(${-c.floatY * 0.5}px) translateX(${-c.floatX * 0.5}px)
+                 rotateY(${c.tiltY - c.tiltY * 0.4}deg) rotateX(${c.tiltX - c.tiltX * 0.4}deg);
+    }
+  }
+`).join('\n')
+
+function HeroSection() {
+  const containerRef = useRef(null)
+  const [mouseX, setMouseX] = useState(0)
+  const [mouseY, setMouseY] = useState(0)
+  const mouseXSpring = useSpring(0, { stiffness: 80, damping: 25 })
+  const mouseYSpring = useSpring(0, { stiffness: 80, damping: 25 })
+  const cardRefs = useRef({})
+  const [hoveredId, setHoveredId] = useState(null)
 
   useEffect(() => {
-    animRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(animRef.current)
-  }, [animate])
+    // 注入关键帧动画
+    const style = document.createElement('style')
+    style.id = 'hero-float-keyframes'
+    style.textContent = cardAnimations
+    document.head.appendChild(style)
+    return () => {
+      const el = document.getElementById('hero-float-keyframes')
+      if (el) el.remove()
+    }
+  }, [])
 
-  const radius = 360
-  const cards = heroCards
-  const step = 360 / cards.length
+  // 鼠标跟踪（带弹性缓冲）
+  const handleMouseMove = (e) => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
+    setMouseX(x)
+    setMouseY(y)
+    mouseXSpring.set(x)
+    mouseYSpring.set(y)
+  }
 
-  // 当前面向用户的卡牌索引
-  useEffect(() => {
-    const normalized = ((angle % 360) + 360) % 360
-    const idx = Math.round(normalized / step) % cards.length
-    setSelectedIdx(idx)
-  }, [angle, step, cards.length])
+  const handleMouseLeave = () => {
+    setMouseX(0)
+    setMouseY(0)
+    mouseXSpring.set(0)
+    mouseYSpring.set(0)
+    setHoveredId(null)
+  }
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -428,77 +517,183 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧3D旋转卡牌 */}
-          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px]"
+          {/* 右侧 · 悬浮卡牌阵 */}
+          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_240px] max-lg:mb-8"
                ref={containerRef}
-               onMouseEnter={() => setPaused(true)}
-               onMouseLeave={() => setPaused(false)}>
+               onMouseMove={handleMouseMove}
+               onMouseLeave={handleMouseLeave}>
             <div className="relative select-none"
                  style={{
-                   width:'100%', height: 400,
+                   width: '100%',
+                   height: 500,
                    perspective: 1000,
+                   transformStyle: 'preserve-3d',
                  }}>
-              {/* 3D车架 */}
-              <div className="absolute inset-0 flex items-center justify-center"
-                   style={{
-                     transformStyle: 'preserve-3d',
-                     transform: `rotateY(${angle}deg)`,
-                     transition: paused ? 'none' : 'none',
-                   }}>
-                {cards.map((card, i) => {
-                  const cardAngle = i * step
-                  return (
-                    <div key={card.num}
+
+              {/* 环境光晕 */}
+              <div className="absolute pointer-events-none rounded-full"
+                style={{
+                  left: '50%', top: '42%',
+                  width: 280, height: 360,
+                  transform: 'translate(-50%, -50%)',
+                  background: 'radial-gradient(ellipse, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.02) 30%, transparent 65%)',
+                  zIndex: 0,
+                }} />
+              <div className="absolute pointer-events-none rounded-full"
+                style={{
+                  left: '30%', top: '60%',
+                  width: 200, height: 200,
+                  transform: 'translate(-50%, -50%)',
+                  background: 'radial-gradient(circle, rgba(160,120,200,0.03) 0%, transparent 60%)',
+                  zIndex: 0,
+                }} />
+
+              {/* 金色粒子 */}
+              <ParticleOverlay containerRef={containerRef}
+                mouseX={mouseX} mouseY={mouseY}
+                hoveredId={hoveredId} />
+
+              {/* 悬浮卡牌 */}
+              {floatingCards.map((card, i) => {
+                // 弹性鼠标跟随
+                const paraScale = card.follow * 14
+                const pX = mouseXSpring.get() * paraScale
+                const pY = mouseYSpring.get() * paraScale
+                // 用style注入鼠标位移（独立于CSS动画的transform）
+                // 鼠标位移 + 自身浮动动画，通过两层div分离
+                return (
+                  <div key={card.id}
+                    ref={el => cardRefs.current[card.id] = el}
+                    className="absolute"
+                    style={{
+                      left: `${card.posX}%`,
+                      top: `${card.posY}%`,
+                      zIndex: card.zLayer + 4,
+                      transform: `translate(-50%, -50%)`,
+                    }}>
+                    {/* 鼠标跟随层 */}
+                    <motion.div
                       className="absolute"
                       style={{
-                        width: 180,
-                        height: 252,
-                        transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
-                        backfaceVisibility: 'visible',
-                        transformStyle: 'preserve-3d',
-                        transition: paused ? 'all 0.3s' : 'none',
-                      }}>
-                      {/* 卡牌本体 */}
-                      <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
+                        x: useTransform(mouseXSpring, v => v * card.follow * 14),
+                        y: useTransform(mouseYSpring, v => v * card.follow * 14),
+                      }}
+                    >
+                      {/* 浮动动画层 */}
+                      <div
+                        className="rounded-xl overflow-hidden cursor-pointer transition-all duration-500"
                         style={{
-                          border: '1px solid rgba(212,175,55,0.15)',
-                          boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-                          transform: 'rotateY(0deg)',
+                          width: `${card.scale * 200}px`,
+                          height: `${card.scale * 280}px`,
+                          filter: `blur(${card.blur}px)`,
+                          animation: `heroFloat${i} ${card.dur}s ease-in-out ${card.delay}s infinite`,
+                          border: hoveredId === card.id
+                            ? '2px solid rgba(212,175,55,0.5)'
+                            : '1px solid rgba(212,175,55,0.12)',
+                          boxShadow: hoveredId === card.id
+                            ? '0 0 50px rgba(212,175,55,0.12), 0 0 100px rgba(212,175,55,0.04)'
+                            : '0 8px 30px rgba(0,0,0,0.4)',
                         }}
-                        onClick={() => {
-                          const el = document.querySelector('#gallery')
-                          if (el) el.scrollIntoView({ behavior: 'smooth' })
-                        }}>
+                        onMouseEnter={() => setHoveredId(card.id)}
+                        onMouseLeave={() => setHoveredId(null)}
+                      >
                         <img src={card.src} alt={card.name}
-                          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} />
+                        {/* 底部渐变 + 卡牌名称 */}
+                        <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center"
+                          style={{
+                            background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
+                            opacity: hoveredId === card.id ? 1 : 0.6,
+                            transition: 'opacity 0.4s',
+                          }}>
+                          <p className="text-xs font-bold f-serif" style={{ color:'#FFF8E7' }}>{card.name}</p>
+                          <p className="text-[9px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{card.en}</p>
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
-              </div>
+                    </motion.div>
+                  </div>
+                )
+              })}
 
-              {/* 当前卡牌信息 */}
-              <div className="absolute left-1/2 -translate-x-1/2 text-center transition-all duration-500"
-                   style={{ bottom: 20, opacity: paused ? 1 : 0.7 }}>
-                <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
-                  {heroCards[selectedIdx].num} · {heroCards[selectedIdx].en}
-                </p>
-                <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
-                  {heroCards[selectedIdx].name}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
-                  {heroCards[selectedIdx].mean}
+              {/* 底部提示文字 */}
+              <div className="absolute left-1/2 -translate-x-1/2 text-center"
+                   style={{ bottom: 5, zIndex: 1 }}>
+                <p className="text-[10px] tracking-[3px]" style={{ color:'#4A3D5B' }}>
+                  移动鼠标 · 卡牌跟随
                 </p>
               </div>
             </div>
-
-            <p className="text-center text-[10px] tracking-[3px] mt-2" style={{ color:'#5A4D6A' }}>
-              {paused ? '✦ 悬停中 · 继续旋转以浏览 ✦' : '鼠标悬停查看详情'}
-            </p>
           </div>
+
         </div>
       </div>
     </section>
+  )
+}
+
+/* ===== 金色粒子覆盖层 ===== */
+function ParticleOverlay({ containerRef, mouseX, mouseY, hoveredId }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    let w, h, particles = []
+    let animId
+
+    function resize() {
+      const parent = canvas.parentElement
+      if (!parent) return
+      w = canvas.width = parent.offsetWidth
+      h = canvas.height = parent.offsetHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    // 金色粒子
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 0.5,
+        a: Math.random() * 0.5 + 0.1,
+        speed: Math.random() * 0.2 + 0.05,
+        phase: Math.random() * Math.PI * 2,
+        driftX: (Math.random() - 0.5) * 0.3,
+        driftY: (Math.random() - 0.5) * 0.3,
+      })
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h)
+      const t = Date.now() / 1000
+      particles.forEach(p => {
+        const pulse = 0.5 + 0.5 * Math.sin(t * p.speed + p.phase)
+        const alpha = p.a * pulse
+        ctx.beginPath()
+        ctx.arc(
+          p.x + Math.sin(t * 0.1 + p.phase) * p.driftX * 20,
+          p.y + Math.cos(t * 0.1 + p.phase) * p.driftY * 20,
+          p.r * (0.8 + 0.2 * pulse), 0, Math.PI * 2
+        )
+        ctx.fillStyle = `rgba(212, 175, 55, ${alpha * 0.6})`
+        ctx.fill()
+      })
+      animId = requestAnimationFrame(draw)
+    }
+    draw()
+
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return (
+    <canvas ref={canvasRef}
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 3 }} />
   )
 }
 
