@@ -463,57 +463,78 @@ function HeroSection() {
     }
   }, [])
 
-  // 倒三角布局：主牌上居中，两辅牌下左右
-  // 主牌高度取350px（范围320-380），5:7比例
-  const MAIN_H = 350
-  const MAIN_W = Math.round(MAIN_H / 7 * 5)        // 250px
-  const BACK_W = Math.round(MAIN_W * 0.7)           // 辅助牌缩小30% → 175px
-  const BACK_H = Math.round(BACK_W / 5 * 7)         // 辅助牌高度 → 245px
+  // 3D锥形扇面布局：卡牌围绕Y轴展开成扇形，底部收窄、顶部展开
+  // 使用 CSS 3D transform 实现锥形效果
+  const CARD_H = 300                                  // 统一卡牌高度
+  const CARD_W = Math.round(CARD_H / 7 * 5)            // 5:7比例 → 214px
 
-  const MAIN_Y = -28                                // 主牌偏上
-  const BACK_Y = 42                                  // 辅助牌在下方
-  const SPREAD = 68                                  // 左右展开距离
+  // 三张牌以不同角度围绕Y轴旋转 + Z轴偏移，形成锥形扇面
+  const FAN_ANGLE = 18                                 // 每张牌之间的角度
+  const FAN_DEPTH = 50                                 // Z轴纵深偏移
 
   // 金色辉光强度
   const glowScale = mouseInside ? 1 + (Math.abs(tilt.x) + Math.abs(tilt.y)) / 10 * 0.3 : 1
 
+  // 锥形扇面：中间牌最大最亮，左右牌旋转展开形成扇面
+  // 底部（收窄处）牌在后方，顶部（展开处）牌在前方
   const cards = [
+    {
+      id:'left',
+      src:'/zodiac-taurus.jpg',
+      name:'金牛座',
+      en:'Taurus',
+      w:CARD_W, h:CARD_H,
+      rotateY: FAN_ANGLE,
+      translateZ: -FAN_DEPTH,
+      translateX: 0,
+      blur:0.8, z:2,
+      brightness:0.65, opacity:0.55,
+      delay:0.6,
+    },
     {
       id:'main',
       src:CARDS.star,
       name:'星星',
       en:'The Star',
-      w:MAIN_W, h:MAIN_H,
-      x:0, y:MAIN_Y,
-      blur:0, z:5,
+      w:CARD_W, h:CARD_H,
+      rotateY: 0,
+      translateZ: 0,
+      translateX: 0,
+      blur:0, z:4,
       brightness:1, opacity:1,
-      floatAmt:3, dur:15, delay:0,
+      delay:0,
     },
     {
-      id:'backLeft',
-      src:'/zodiac-taurus.jpg',
-      name:'金牛座',
-      en:'Taurus',
-      w:BACK_W, h:BACK_H,
-      x:-SPREAD, y:BACK_Y,
-      blur:1.5, z:3,
-      brightness:0.5, opacity:0.45,
-      floatAmt:4, dur:16, delay:1.2,
-    },
-    {
-      id:'backRight',
+      id:'right',
       src:'/zodiac-aquarius.jpg',
       name:'水瓶座',
       en:'Aquarius',
-      w:BACK_W, h:BACK_H,
-      x:SPREAD, y:BACK_Y,
-      blur:1.5, z:3,
-      brightness:0.5, opacity:0.45,
-      floatAmt:-4, dur:17, delay:0.6,
+      w:CARD_W, h:CARD_H,
+      rotateY: -FAN_ANGLE,
+      translateZ: -FAN_DEPTH,
+      translateX: 0,
+      blur:0.8, z:2,
+      brightness:0.65, opacity:0.55,
+      delay:1.2,
     },
   ]
 
-  const FLEX_RIGHT = 'flex-[0_0_420px] max-lg:flex-[0_0_280px] max-lg:mb-8'
+  // 锥形扇面整体缓慢旋转动画
+  const [fanAngle, setFanAngle] = useState(0)
+  useEffect(() => {
+    let id
+    let start = Date.now()
+    function animate() {
+      const elapsed = (Date.now() - start) / 1000
+      // 30秒一圈，足够慢
+      setFanAngle(Math.sin(elapsed * 0.1) * 6)
+      id = requestAnimationFrame(animate)
+    }
+    id = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  const FLEX_RIGHT = 'flex-[0_0_380px] max-lg:flex-[0_0_260px] max-lg:mb-8'
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -560,95 +581,93 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 倒三角漂浮塔罗牌阵 */}
+          {/* 右侧 · 3D锥形扇面塔罗牌阵 */}
           <div className={FLEX_RIGHT} ref={containerRef}>
             <div
               className="relative select-none mx-auto"
               style={{
-                width:'100%', maxWidth:450, height:Math.max(MAIN_H, BACK_Y + BACK_H/2 + 30) + 60,
-                perspective: 1000,
+                width:'100%', maxWidth:380, height:CARD_H + 60,
+                perspective: 900,
                 transformStyle: 'preserve-3d',
-                transform: mouseInside ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` : 'none',
-                transition: 'transform 0.15s ease-out',
               }}>
-              {/* 主牌金色辉光 */}
-              <div className="absolute pointer-events-none rounded-full"
+              {/* 后方金色辉光 */}
+              <div className="absolute pointer-events-none"
                 style={{
                   left:'50%', top:'50%',
-                  width:MAIN_W * 2, height:MAIN_H * 1.3,
-                  transform:`translate(-50%, calc(-50% + ${MAIN_Y}px))`,
-                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.1 * glowScale}) 0%, rgba(212,175,55,${0.03 * glowScale}) 30%, transparent 60%)`,
+                  width:CARD_W * 2.5, height:CARD_H * 1.3,
+                  transform:'translate(-50%,-50%) translateZ(-60px)',
+                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.08 * glowScale}) 0%, rgba(212,175,55,0.02) 35%, transparent 60%)`,
                   zIndex:0,
                   transition: 'all 0.4s ease',
                 }}/>
-              {/* 紫色神秘光晕 */}
-              <div className="absolute pointer-events-none rounded-full"
+              {/* 紫色环境光晕 */}
+              <div className="absolute pointer-events-none"
                 style={{
                   left:'50%', top:'50%',
-                  width:MAIN_W * 1.2, height:MAIN_H * 0.8,
-                  transform:`translate(-50%, calc(-50% + ${MAIN_Y - 5}px))`,
-                  background:'radial-gradient(circle, rgba(122,77,255,0.04) 0%, transparent 50%)',
-                  zIndex:0,
-                }}/>
-              {/* 下方环境光 */}
-              <div className="absolute pointer-events-none rounded-full"
-                style={{
-                  left:'50%', top:'50%',
-                  width:MAIN_W * 1.5, height:100,
-                  transform:`translate(-50%, calc(-50% + ${BACK_Y + 5}px))`,
-                  background:'radial-gradient(ellipse, rgba(200,220,255,0.025) 0%, transparent 60%)',
+                  width:CARD_W * 1.5, height:CARD_H,
+                  transform:'translate(-50%,-50%) translateZ(-30px)',
+                  background:'radial-gradient(circle, rgba(122,77,255,0.03) 0%, transparent 50%)',
                   zIndex:0,
                 }}/>
 
-              {cards.map((card, i) => {
-                const animName = `heroFloat${i}`
-                const isMain = card.id === 'main'
-                const mainGlow = isMain && mouseInside
-                  ? `0 30px 80px rgba(0,0,0,0.5), 0 0 ${50 * glowScale}px rgba(212,175,55,${0.15 * glowScale}), 0 0 ${100 * glowScale}px rgba(212,175,55,${0.05 * glowScale})`
-                  : isMain
-                    ? '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.08)'
-                    : '0 10px 30px rgba(0,0,0,0.4)'
-                const mainBorder = isMain
-                  ? mouseInside
-                    ? `1.5px solid rgba(212,175,55,${0.3 * glowScale})`
-                    : '1.5px solid rgba(212,175,55,0.2)'
-                  : '1px solid rgba(212,175,55,0.06)'
-                return (
-                  <div key={card.id}
-                    className="absolute"
-                    style={{
-                      left: `calc(50% + ${card.x}px)`,
-                      top: `calc(50% + ${card.y}px)`,
-                      zIndex: card.z,
-                      transform: 'translate(-50%,-50%)',
-                      animation: `${animName} ${card.dur}s ease-in-out ${card.delay}s infinite`,
-                    }}>
+              {/* 锥形扇面组 - 整体缓慢旋转 */}
+              <div
+                className="absolute"
+                style={{
+                  left:'50%', top:'50%',
+                  transform: `translate(-50%,-50%) rotateY(${fanAngle}deg)`,
+                  transformStyle: 'preserve-3d',
+                  transition: 'none',
+                }}>
+                {cards.map((card, i) => {
+                  const isMain = card.id === 'main'
+                  const mainGlow = isMain && mouseInside
+                    ? `0 20px 60px rgba(0,0,0,0.4), 0 0 ${40 * glowScale}px rgba(212,175,55,${0.12 * glowScale})`
+                    : isMain
+                      ? '0 20px 60px rgba(0,0,0,0.4), 0 0 50px rgba(212,175,55,0.06)'
+                      : '0 8px 24px rgba(0,0,0,0.3)'
+                  const mainBorder = isMain
+                    ? `1.5px solid rgba(212,175,55,${mouseInside ? 0.25 * glowScale : 0.15})`
+                    : '1px solid rgba(212,175,55,0.04)'
+                  return (
                     <div
-                      className="rounded-xl overflow-hidden"
+                      key={card.id}
+                      className="absolute"
                       style={{
                         width: card.w,
                         height: card.h,
+                        transform: `translate(-50%,-50%) rotateY(${card.rotateY}deg) translateZ(${card.translateZ}px)`,
                         filter: `blur(${card.blur}px) brightness(${card.brightness})`,
                         opacity: card.opacity,
                         border: mainBorder,
                         boxShadow: mainGlow,
+                        zIndex: card.z,
                         transition: 'border 0.3s ease, box-shadow 0.3s ease',
                       }}>
-                      <img src={card.src} alt={card.name}
-                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                      <img
+                        src={card.src}
+                        alt={card.name}
+                        draggable={false}
+                        style={{
+                          width:'100%', height:'100%',
+                          objectFit:'cover',
+                          display:'block',
+                          borderRadius:'12px',
+                        }}/>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
 
-              <style dangerouslySetInnerHTML={{ __html: cards.map((c, i) => `
-                @keyframes heroFloat${i} {
-                  0%,100% { transform: translate(-50%,-50%) translateY(0px) translateX(0px); }
-                  25% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.6}px) translateX(${c.floatAmt * 0.25}px); }
-                  50% { transform: translate(-50%,-50%) translateY(${c.floatAmt * 0.35}px) translateX(${-c.floatAmt * 0.2}px); }
-                  75% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.15}px) translateX(${c.floatAmt * 0.1}px); }
-                }
-              `).join('') }}/>
+              {/* 底部环境光晕 - 锥形收窄处 */}
+              <div className="absolute pointer-events-none"
+                style={{
+                  left:'50%', top:'50%',
+                  width:60, height:60,
+                  transform:'translate(-50%,-50%) translateY(120px)',
+                  background:'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 60%)',
+                  zIndex:0,
+                }}/>
             </div>
           </div>
         </div>
