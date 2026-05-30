@@ -441,7 +441,7 @@ function HeroSection() {
       const deltaY = (e.clientY - centerY) / (rect.height / 2)
       cancelAnimationFrame(frameId)
       frameId = requestAnimationFrame(() => {
-        setTilt({ x: -deltaY * 4, y: deltaX * 4 })
+        setTilt({ x: -deltaY * 2, y: deltaX * 2 })
       })
     }
 
@@ -463,13 +463,18 @@ function HeroSection() {
     }
   }, [])
 
-  // 主牌高度500-600px，按5:7比例算宽度
-  const MAIN_H = 520
-  const MAIN_W = Math.round(MAIN_H / 7 * 5)        // 5:7比例 → 371px
-  const BACK_W = Math.round(MAIN_W * 0.6)           // 辅助牌缩小40% = 60%主牌大小 → 223px
-  const BACK_H = Math.round(BACK_W / 5 * 7)         // 辅助牌高度 → 312px
+  // 倒三角布局：主牌上居中，两辅牌下左右
+  // 主牌高度取350px（范围320-380），5:7比例
+  const MAIN_H = 350
+  const MAIN_W = Math.round(MAIN_H / 7 * 5)        // 250px
+  const BACK_W = Math.round(MAIN_W * 0.7)           // 辅助牌缩小30% → 175px
+  const BACK_H = Math.round(BACK_W / 5 * 7)         // 辅助牌高度 → 245px
 
-  // 金色辉光强度基于鼠标位置
+  const MAIN_Y = -28                                // 主牌偏上
+  const BACK_Y = 42                                  // 辅助牌在下方
+  const SPREAD = 68                                  // 左右展开距离
+
+  // 金色辉光强度
   const glowScale = mouseInside ? 1 + (Math.abs(tilt.x) + Math.abs(tilt.y)) / 10 * 0.3 : 1
 
   const cards = [
@@ -479,10 +484,10 @@ function HeroSection() {
       name:'星星',
       en:'The Star',
       w:MAIN_W, h:MAIN_H,
-      x:0, y:0,
+      x:0, y:MAIN_Y,
       blur:0, z:5,
       brightness:1, opacity:1,
-      floatAmt:4, dur:10, delay:0,
+      floatAmt:3, dur:15, delay:0,
     },
     {
       id:'backLeft',
@@ -490,10 +495,10 @@ function HeroSection() {
       name:'金牛座',
       en:'Taurus',
       w:BACK_W, h:BACK_H,
-      x:-80, y:-20,
-      blur:4, z:2,
-      brightness:0.3, opacity:0.3,
-      floatAmt:6, dur:11, delay:1.5,
+      x:-SPREAD, y:BACK_Y,
+      blur:1.5, z:3,
+      brightness:0.5, opacity:0.45,
+      floatAmt:4, dur:16, delay:1.2,
     },
     {
       id:'backRight',
@@ -501,14 +506,14 @@ function HeroSection() {
       name:'水瓶座',
       en:'Aquarius',
       w:BACK_W, h:BACK_H,
-      x:80, y:20,
-      blur:4, z:2,
-      brightness:0.3, opacity:0.3,
-      floatAmt:-5, dur:12, delay:0.8,
+      x:SPREAD, y:BACK_Y,
+      blur:1.5, z:3,
+      brightness:0.5, opacity:0.45,
+      floatAmt:-4, dur:17, delay:0.6,
     },
   ]
 
-  const FLEX_RIGHT = 'flex-[0_0_520px] max-lg:flex-[0_0_280px] max-lg:mb-8'
+  const FLEX_RIGHT = 'flex-[0_0_420px] max-lg:flex-[0_0_280px] max-lg:mb-8'
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -555,12 +560,12 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 宇宙漂浮塔罗牌阵 */}
+          {/* 右侧 · 倒三角漂浮塔罗牌阵 */}
           <div className={FLEX_RIGHT} ref={containerRef}>
             <div
               className="relative select-none mx-auto"
               style={{
-                width:'100%', maxWidth:520, height:MAIN_H + 140,
+                width:'100%', maxWidth:450, height:Math.max(MAIN_H, BACK_Y + BACK_H/2 + 30) + 60,
                 perspective: 1000,
                 transformStyle: 'preserve-3d',
                 transform: mouseInside ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` : 'none',
@@ -569,26 +574,29 @@ function HeroSection() {
               {/* 主牌金色辉光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'50%', width:MAIN_W * 2, height:MAIN_H * 1.4,
-                  transform:'translate(-50%,-50%)',
-                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.08 * glowScale}) 0%, rgba(212,175,55,${0.025 * glowScale}) 30%, transparent 60%)`,
+                  left:'50%', top:'50%',
+                  width:MAIN_W * 2, height:MAIN_H * 1.3,
+                  transform:`translate(-50%, calc(-50% + ${MAIN_Y}px))`,
+                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.1 * glowScale}) 0%, rgba(212,175,55,${0.03 * glowScale}) 30%, transparent 60%)`,
                   zIndex:0,
                   transition: 'all 0.4s ease',
                 }}/>
               {/* 紫色神秘光晕 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'42%', top:'48%', width:MAIN_W * 1.3, height:MAIN_H * 0.9,
-                  transform:'translate(-50%,-50%)',
+                  left:'50%', top:'50%',
+                  width:MAIN_W * 1.2, height:MAIN_H * 0.8,
+                  transform:`translate(-50%, calc(-50% + ${MAIN_Y - 5}px))`,
                   background:'radial-gradient(circle, rgba(122,77,255,0.04) 0%, transparent 50%)',
                   zIndex:0,
                 }}/>
-              {/* 底部辉光 */}
+              {/* 下方环境光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'68%', width:250, height:250,
-                  transform:'translate(-50%,-50%)',
-                  background:'radial-gradient(circle, rgba(200,220,255,0.03) 0%, transparent 60%)',
+                  left:'50%', top:'50%',
+                  width:MAIN_W * 1.5, height:100,
+                  transform:`translate(-50%, calc(-50% + ${BACK_Y + 5}px))`,
+                  background:'radial-gradient(ellipse, rgba(200,220,255,0.025) 0%, transparent 60%)',
                   zIndex:0,
                 }}/>
 
