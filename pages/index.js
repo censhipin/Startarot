@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useState, useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 /* ================================
    公有领域维特塔罗牌面
@@ -324,18 +323,40 @@ function NavBar() {
 /* ================================ HERO · 悬浮卡牌阵 ================================ */
 function HeroSection() {
   const containerRef = useRef(null)
-  const mouseXSpring = useSpring(0, { stiffness:60, damping:20 })
-  const mouseYSpring = useSpring(0, { stiffness:60, damping:20 })
+  const followRefs = useRef({})
   const [hoveredCard, setHoveredCard] = useState(null)
+  const mousePos = useRef({ x: 0, y: 0 })
+  const smoothPos = useRef({ x: 0, y: 0 })
 
   const handleMouseMove = (e) => {
     const rect = containerRef.current?.getBoundingClientRect()
     if (!rect) return
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
-    mouseXSpring.set(x)
-    mouseYSpring.set(y)
+    mousePos.current = {
+      x: ((e.clientX - rect.left) / rect.width - 0.5) * 2,
+      y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
+    }
   }
+
+  // 平滑跟随动画循环
+  useEffect(() => {
+    let id
+    function lerp() {
+      smoothPos.current.x += (mousePos.current.x - smoothPos.current.x) * 0.08
+      smoothPos.current.y += (mousePos.current.y - smoothPos.current.y) * 0.08
+
+      Object.entries(followRefs.current).forEach(([key, el]) => {
+        if (!el) return
+        const card = cards.find(c => c.id === key)
+        if (!card) return
+        const px = smoothPos.current.x * card.follow * 14
+        const py = smoothPos.current.y * card.follow * 14
+        el.style.transform = `translate(${px}px, ${py}px)`
+      })
+      id = requestAnimationFrame(lerp)
+    }
+    id = requestAnimationFrame(lerp)
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   const cards = [
     { id:'left', src:'/zodiac-aries.jpg', name:'白羊座', en:'Aries',
@@ -395,7 +416,7 @@ function HeroSection() {
           <div className="flex-[0_0_380px] max-lg:order-1 max-lg:flex-[0_0_260px] max-lg:mb-8"
                ref={containerRef}
                onMouseMove={handleMouseMove}
-               onMouseLeave={() => { mouseXSpring.set(0); mouseYSpring.set(0); setHoveredCard(null) }}>
+               onMouseLeave={() => { mousePos.current = { x:0, y:0 }; setHoveredCard(null) }}>
             <div className="relative select-none" style={{ width:'100%', height:480, perspective:1200, transformStyle:'preserve-3d' }}>
               {/* 主牌光晕 */}
               <div className="absolute pointer-events-none rounded-full"
@@ -405,7 +426,6 @@ function HeroSection() {
                   background:'radial-gradient(ellipse, rgba(212,175,55,0.06) 0%, transparent 60%)',
                   zIndex:0,
                 }}/>
-              {/* 紫色环境光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
                   left:'30%', top:'55%', width:200, height:200,
@@ -420,12 +440,10 @@ function HeroSection() {
                   <div key={card.id}
                     className="absolute"
                     style={{ left:`${card.left}%`, top:`${card.top}%`, zIndex: card.z + 4, transform:'translate(-50%,-50%)' }}>
-                    <motion.div
-                      className="absolute"
-                      style={{
-                        x: useTransform(mouseXSpring, v => v * card.follow * 12),
-                        y: useTransform(mouseYSpring, v => v * card.follow * 12),
-                      }}>
+                    {/* 鼠标跟随层 */}
+                    <div ref={el => followRefs.current[card.id] = el}
+                      className="will-change-transform">
+                      {/* 卡牌本体 */}
                       <div
                         className="rounded-xl overflow-hidden cursor-pointer transition-all duration-700"
                         style={{
@@ -458,7 +476,7 @@ function HeroSection() {
                           <p className="text-[9px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{card.en}</p>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   </div>
                 )
               })}
