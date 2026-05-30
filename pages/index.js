@@ -82,25 +82,6 @@ const ZODIACS = [
   { sym:'♓', name:'双鱼座', en:'Pisces', date:'2.19-3.20', el:'水', color:'#A29BFE', planet:'海王星', desc:'富有想象力和同情心，艺术天赋高，感性浪漫。' },
 ]
 
-// 星座图案（用符号+颜色背景模拟卡牌）
-const zodiacCardBg = (z) => {
-  const gradients = {
-    '♈': 'linear-gradient(135deg, #4a0e0e, #2a0505)',
-    '♉': 'linear-gradient(135deg, #0a2e0a, #051a05)',
-    '♊': 'linear-gradient(135deg, #3a2e00, #1a1400)',
-    '♋': 'linear-gradient(135deg, #002a4a, #00152a)',
-    '♌': 'linear-gradient(135deg, #3a1a00, #1a0e00)',
-    '♍': 'linear-gradient(135deg, #002a20, #001a12)',
-    '♎': 'linear-gradient(135deg, #2a004a, #1a002a)',
-    '♏': 'linear-gradient(135deg, #3a0000, #1a0000)',
-    '♐': 'linear-gradient(135deg, #002a4a, #001a2a)',
-    '♑': 'linear-gradient(135deg, #1a1a1a, #0a0a0a)',
-    '♒': 'linear-gradient(135deg, #002a2a, #001a1a)',
-    '♓': 'linear-gradient(135deg, #1a004a, #0e002a)',
-  }
-  return gradients[z.sym] || 'linear-gradient(135deg, #1a0f2a, #0f0818)'
-}
-
 /* ================================================================
    页面主组件
    ================================================================ */
@@ -783,7 +764,7 @@ function FeaturesSection() {
 }
 
 /* ================================================================
-   十二星座 · 卡牌式轮播
+   十二星座 · AI卡牌轮播（已生成3张，其余陆续补充）
    ================================================================ */
 function ZodiacCards() {
   const scrollRef = useRef(null)
@@ -803,7 +784,14 @@ function ZodiacCards() {
     return () => clearInterval(interval)
   }, [paused])
 
-  const allZodiacs = [...ZODIACS, ...ZODIACS]
+  // 3张已生成的AI图片
+  const aiCards = {
+    taurus: '/zodiac-taurus.jpg',
+    aries: '/zodiac-aries.jpg',
+    aquarius: '/zodiac-aquarius.jpg',
+  }
+
+  const allItems = [...ZODIACS, ...ZODIACS]
 
   return (
     <section id="zodiac" className="relative z-10 py-24 overflow-hidden">
@@ -825,46 +813,87 @@ function ZodiacCards() {
         <div ref={scrollRef}
           className="overflow-x-auto"
           style={{ scrollbarWidth:'none', msOverflowStyle:'none', cursor:'grab' }}>
-          <div className="inline-flex gap-4 py-4">
-            {allZodiacs.map((z, i) => (
-              <div key={i}
-                className="shrink-0 rounded-xl transition-all duration-500 cursor-pointer"
-                style={{
-                  width: 160,
-                  background: zodiacCardBg(z),
-                  border: activeIdx === i
-                    ? `2px solid ${z.color}`
-                    : '1px solid rgba(255,255,255,0.04)',
-                  transform: activeIdx === i ? 'translateY(-8px) scale(1.03)' : 'none',
-                  boxShadow: activeIdx === i ? `0 12px 40px rgba(0,0,0,0.5)` : '0 4px 12px rgba(0,0,0,0.2)',
-                }}
-                onMouseEnter={() => setActiveIdx(i)}
-                onMouseLeave={() => setActiveIdx(null)}>
-                {/* 星座卡牌 */}
-                <div className="p-5 flex flex-col items-center gap-2">
-                  {/* 星座符号（大号） */}
-                  <div className="text-5xl mb-1" style={{ color: z.color }}>{z.sym}</div>
-                  <p className="text-base f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
-                  <p className="text-[11px]" style={{ color:`${z.color}99` }}>{z.en}</p>
+          <div className="inline-flex gap-5 py-4">
+            {allItems.map((z, i) => {
+              const signKey = z.en.toLowerCase()
+              const hasImage = aiCards[signKey]
+              return (
+                <div key={i}
+                  className="shrink-0 rounded-xl overflow-hidden transition-all duration-500 cursor-pointer relative"
+                  style={{
+                    width: 180,
+                    aspectRatio: '5/7',
+                    border: activeIdx === i
+                      ? `2px solid ${z.color}`
+                      : '1px solid rgba(255,255,255,0.06)',
+                    transform: activeIdx === i ? 'translateY(-10px) scale(1.03)' : 'none',
+                    boxShadow: activeIdx === i ? `0 16px 48px rgba(0,0,0,0.6)` : '0 4px 16px rgba(0,0,0,0.3)',
+                  }}
+                  onMouseEnter={() => setActiveIdx(i)}
+                  onMouseLeave={() => setActiveIdx(null)}>
 
-                  {/* 悬停时显示详细信息 */}
-                  <div className={`overflow-hidden transition-all duration-400 ${
-                    activeIdx === i ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'
-                  }`}>
-                    <div className="w-8 h-px mx-auto mb-2" style={{ background: z.color }}/>
-                    <p className="text-[11px] text-center" style={{ color:'#B8A9C9' }}>
-                      日期: {z.date}
-                    </p>
-                    <p className="text-[11px] text-center" style={{ color: z.color }}>
-                      元素: {z.el} · 守护星: {z.planet}
-                    </p>
-                    <p className="text-[10px] text-center mt-1 leading-relaxed px-1" style={{ color:'#8B7D9B' }}>
-                      {z.desc}
-                    </p>
-                  </div>
+                  {hasImage ? (
+                    <>
+                      {/* AI生成的星座卡牌图片 */}
+                      <img src={hasImage} alt={z.name}
+                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                      {/* 悬停遮罩 */}
+                      <div className="absolute inset-0 transition-opacity duration-300"
+                        style={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)',
+                          opacity: activeIdx === i ? 1 : 0,
+                        }}>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                          <p className="text-xs tracking-[3px]" style={{ color: z.color }}>{z.en.toUpperCase()}</p>
+                          <p className="text-xs mt-1" style={{ color:'#B8A9C9' }}>{z.date}</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: z.color }}>{z.el} · {z.planet}</p>
+                        </div>
+                      </div>
+                      {/* 卡牌底部名称条 */}
+                      <div className="absolute bottom-0 left-0 right-0 p-3 text-center"
+                        style={{
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+                          opacity: activeIdx === i ? 0 : 1,
+                          transition: 'opacity 0.3s',
+                        }}>
+                        <p className="text-sm f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
+                        <p className="text-[10px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{z.en}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* 占位卡牌——等待生成 */}
+                      <div className="w-full h-full flex flex-col items-center justify-center p-5 text-center"
+                        style={{
+                          background: `linear-gradient(180deg, ${z.color}08 0%, ${z.color}03 50%, rgba(10,10,18,1) 100%)`,
+                        }}>
+                        <div className="text-5xl mb-2" style={{ color: `${z.color}66` }}>{z.sym}</div>
+                        <p className="text-base f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
+                        <p className="text-[11px] tracking-[3px]" style={{ color:`${z.color}99` }}>{z.en}</p>
+                        <div className="w-6 h-px my-2" style={{ background:`${z.color}44` }}/>
+
+                        {/* 悬停详细信息 */}
+                        <div className={`overflow-hidden transition-all duration-300 w-full ${
+                          activeIdx === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                        }`}>
+                          <p className="text-[10px]" style={{ color:'#8B7D9B' }}>{z.date}</p>
+                          <p className="text-[10px] mt-0.5" style={{ color: z.color }}>{z.el} · {z.planet}</p>
+                          <p className="text-[9px] mt-1 leading-relaxed px-1" style={{ color:'#7A6D8A' }}>{z.desc}</p>
+                        </div>
+
+                        {/* Coming Soon 标签 */}
+                        <div className="mt-auto">
+                          <span className="text-[8px] px-2 py-0.5 rounded-full tracking-[2px]"
+                            style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', color:'#5A4D6A' }}>
+                            待生成
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
