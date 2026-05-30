@@ -451,8 +451,9 @@ function HeroSection() {
     { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
 
-  const radius = 180
+  const radius = 220
   const step = 360 / cards.length
+  const tiltAmount = 35 // 前后倾斜幅度(px)
 
   useEffect(() => {
     if (paused) return
@@ -537,12 +538,15 @@ function HeroSection() {
               {/* 3D旋转架 */}
               <div className="absolute inset-0 flex items-center justify-center"
                 style={{ transformStyle:'preserve-3d', transform:`rotateY(${angle}deg)` }}>
-                {cards.map((card, i) => (
+                {cards.map((card, i) => {
+                  const cardAngleRad = i * step * Math.PI / 180
+                  const yOffset = Math.cos(cardAngleRad) * tiltAmount
+                  return (
                   <div key={card.num}
                     className="absolute"
                     style={{
-                      width:130, height:182,
-                      transform:`rotateY(${i * step}deg) translateZ(${radius}px)`,
+                      width:145, height:203,
+                      transform:`rotateY(${i * step}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
                       transformStyle:'preserve-3d',
                     }}>
                     <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
@@ -554,7 +558,7 @@ function HeroSection() {
                         style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
 
               {/* 当前卡牌信息 - 放在旋转区域下方 */}
