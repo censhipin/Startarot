@@ -451,7 +451,7 @@ function HeroSection() {
     { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
 
-  const radius = 360
+  const radius = 180
   const step = 360 / cards.length
 
   useEffect(() => {
@@ -520,15 +520,15 @@ function HeroSection() {
           </div>
 
           {/* 右侧 · 3D旋转卡牌 */}
-          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px]"
+          <div className="flex-[0_0_280px] max-lg:order-1 max-lg:flex-[0_0_200px]"
                onMouseEnter={() => setPaused(true)}
                onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none" style={{ width:'100%', height:400, perspective:1000 }}>
+            <div className="relative select-none" style={{ width:'100%', height:340, perspective:800 }}>
 
               {/* 中心光晕 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'45%', width:280, height:350,
+                  left:'50%', top:'42%', width:200, height:260,
                   transform:'translate(-50%,-50%)',
                   background:'radial-gradient(ellipse, rgba(212,175,55,0.05) 0%, transparent 60%)',
                   zIndex:0,
@@ -541,7 +541,7 @@ function HeroSection() {
                   <div key={card.num}
                     className="absolute"
                     style={{
-                      width:180, height:252,
+                      width:130, height:182,
                       transform:`rotateY(${i * step}deg) translateZ(${radius}px)`,
                       transformStyle:'preserve-3d',
                     }}>
@@ -557,21 +557,20 @@ function HeroSection() {
                 ))}
               </div>
 
-              {/* 当前卡牌信息 */}
-              <div className="absolute left-1/2 -translate-x-1/2 text-center" style={{ bottom:20, zIndex:10 }}>
-                <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
-                  {cards[selectedIdx].num} · {cards[selectedIdx].en}
-                </p>
-                <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
-                  {cards[selectedIdx].name}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
-                  {cards[selectedIdx].mean}
-                </p>
-              </div>
-
-              <p className="absolute left-1/2 -translate-x-1/2 text-[10px] tracking-[3px]"
-                style={{ bottom:2, color:'#4A3D5B', zIndex:10 }}>
+              {/* 当前卡牌信息 - 放在旋转区域下方 */}
+            </div>
+            {/* 卡牌信息 - 在容器外面，确保不重叠 */}
+            <div className="text-center mt-3">
+              <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
+                {cards[selectedIdx].num} · {cards[selectedIdx].en}
+              </p>
+              <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
+                {cards[selectedIdx].name}
+              </p>
+              <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
+                {cards[selectedIdx].mean}
+              </p>
+              <p className="text-[10px] tracking-[3px] mt-2" style={{ color:'#4A3D5B' }}>
                 {paused ? '✦ 已暂停' : '鼠标悬停以暂停'}
               </p>
             </div>
