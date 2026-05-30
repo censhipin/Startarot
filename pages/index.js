@@ -422,104 +422,55 @@ function NavBar() {
 }
 
 /* ================================ HERO · 景深卡牌漂浮阵 + 鼠标跟随 ================================ */
+/* ================================
+ HERO · 3D立体旋转卡牌
+ ================================ */
 function HeroSection() {
-  const containerRef = useRef(null)
-  const [tilt, setTilt] = useState({ x: 0, y: 0 })
-  const [mouseInside, setMouseInside] = useState(false)
+  const [angle, setAngle] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const animRef = useRef(null)
+  const lastTime = useRef(0)
+  const [selectedIdx, setSelectedIdx] = useState(0)
 
-  // 鼠标跟随：卡牌轻微偏转 2°~5°
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    let frameId
-    function onMouseMove(e) {
-      const rect = container.getBoundingClientRect()
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-      const deltaX = (e.clientX - centerX) / (rect.width / 2)
-      const deltaY = (e.clientY - centerY) / (rect.height / 2)
-      cancelAnimationFrame(frameId)
-      frameId = requestAnimationFrame(() => {
-        setTilt({ x: -deltaY * 2, y: deltaX * 2 })
-      })
-    }
-
-    function onMouseEnter() { setMouseInside(true) }
-    function onMouseLeave() {
-      setMouseInside(false)
-      cancelAnimationFrame(frameId)
-      setTilt({ x: 0, y: 0 })
-    }
-
-    container.addEventListener('mouseenter', onMouseEnter)
-    container.addEventListener('mousemove', onMouseMove)
-    container.addEventListener('mouseleave', onMouseLeave)
-    return () => {
-      container.removeEventListener('mouseenter', onMouseEnter)
-      container.removeEventListener('mousemove', onMouseMove)
-      container.removeEventListener('mouseleave', onMouseLeave)
-      cancelAnimationFrame(frameId)
-    }
-  }, [])
-
-  // 3D扇面布局：卡牌展开成半扇形，类似展开的扑克牌
-  const CARD_H = 260                                     // 统一卡牌高度
-  const CARD_W = Math.round(CARD_H / 7 * 5)               // 5:7比例 → 186px
-
-  // 金色辉光强度
-  const glowScale = mouseInside ? 1 + (Math.abs(tilt.x) + Math.abs(tilt.y)) / 10 * 0.3 : 1
-
-  // 扇面卡片：三张卡牌以不同角度旋转展开，形成半扇形
-  // 中间牌最大最亮，两侧牌向外展开+缩小+模糊
   const cards = [
-    {
-      id:'left',
-      src:'/zodiac-taurus.jpg',
-      name:'金牛座',
-      en:'Taurus',
-      w:CARD_W, h:CARD_H,
-      angle: -28,
-      scale: 0.82,
-      z:1,
-      blur:1.2,
-      brightness:0.55,
-      opacity:0.5,
-    },
-    {
-      id:'main',
-      src:CARDS.star,
-      name:'星星',
-      en:'The Star',
-      w:CARD_W, h:CARD_H,
-      angle: 0,
-      scale: 1,
-      z:3,
-      blur:0,
-      brightness:1,
-      opacity:1,
-    },
-    {
-      id:'right',
-      src:'/zodiac-aquarius.jpg',
-      name:'水瓶座',
-      en:'Aquarius',
-      w:CARD_W, h:CARD_H,
-      angle: 28,
-      scale: 0.82,
-      z:1,
-      blur:1.2,
-      brightness:0.55,
-      opacity:0.5,
-    },
+    { src: CARDS.fool, name:'愚人', num:'0', en:'The Fool', mean:'新的开始 · 冒险 · 纯真' },
+    { src: CARDS.magician, name:'魔术师', num:'I', en:'The Magician', mean:'创造力 · 自信 · 技能' },
+    { src: CARDS.priestess, name:'女祭司', num:'II', en:'The High Priestess', mean:'直觉 · 智慧 · 神秘' },
+    { src: CARDS.star, name:'星星', num:'XVII', en:'The Star', mean:'希望 · 灵感 · 治愈' },
+    { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
 
-  const FLEX_RIGHT = 'flex-[0_0_360px] max-lg:flex-[0_0_240px] max-lg:mb-8'
+  const radius = 340
+  const step = 360 / cards.length
+
+  useEffect(() => {
+    if (paused) return
+    let last = 0
+    function animate(time) {
+      if (!last) last = time
+      const delta = time - last
+      last = time
+      setAngle(prev => (prev + delta * 0.015) % 360)
+      animRef.current = requestAnimationFrame(animate)
+    }
+    animRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animRef.current)
+  }, [paused])
+
+  useEffect(() => {
+    const normalized = ((angle % 360) + 360) % 360
+    const idx = Math.round(normalized / step) % cards.length
+    setSelectedIdx(idx)
+  }, [angle])
+
+  const CARD_H = 280
+  const CARD_W = Math.round(CARD_H / 7 * 5)
+  const FLEX_RIGHT = 'flex-[0_0_420px] max-lg:flex-[0_0_280px] max-lg:mb-8'
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 w-full">
-        <div className="flex items-center gap-12 max-lg:flex-col max-lg:text-center">
+        <div className="flex items-center gap-8 max-lg:flex-col max-lg:text-center">
 
           {/* 左侧文字 */}
           <div className="flex-1 max-lg:order-2">
@@ -561,74 +512,89 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 扇面展开塔罗牌阵 */}
-          <div className={FLEX_RIGHT} ref={containerRef}>
+          {/* 右侧 · 3D立体旋转卡牌圈 */}
+          <div className={FLEX_RIGHT}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}>
             <div
-              className="relative select-none mx-auto flex items-center justify-center"
+              className="relative select-none mx-auto"
               style={{
-                width:'100%', maxWidth:360, height:CARD_H + 80,
-                transform: mouseInside ? `rotateX(${tilt.x * 0.5}deg) rotateY(${tilt.y * 0.5}deg)` : 'none',
-                transition: 'transform 0.2s ease-out',
+                width:'100%', maxWidth:420, height:440,
+                perspective: 1000,
+                transformStyle: 'preserve-3d',
               }}>
-              {/* 后方辉光 */}
+              {/* 中心辉光 */}
               <div className="absolute pointer-events-none"
                 style={{
-                  width:CARD_W * 2.5, height:CARD_H * 1.3,
-                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.08 * glowScale}) 0%, rgba(212,175,55,0.015) 35%, transparent 60%)`,
-                  transition:'all 0.4s ease',
+                  left:'50%', top:'50%',
+                  width:320, height:320,
+                  transform:'translate(-50%,-50%)',
+                  background:'radial-gradient(circle, rgba(212,175,55,0.06) 0%, rgba(212,175,55,0.02) 25%, transparent 55%)',
+                  zIndex:0,
                 }}/>
               <div className="absolute pointer-events-none"
                 style={{
-                  width:CARD_W * 1.5, height:CARD_H * 0.8,
+                  left:'50%', top:'50%',
+                  width:200, height:200,
+                  transform:'translate(-50%,-50%)',
                   background:'radial-gradient(circle, rgba(122,77,255,0.03) 0%, transparent 50%)',
+                  zIndex:0,
                 }}/>
 
-              {/* 3张牌以主牌为中心展开成扇面 */}
-              {cards.map((card, i) => {
-                const isMain = card.id === 'main'
-                const mainGlow = isMain
-                  ? `0 20px 60px rgba(0,0,0,0.4), 0 0 ${mouseInside ? 60 * glowScale : 40}px rgba(212,175,55,${mouseInside ? 0.12 * glowScale : 0.06})`
-                  : '0 8px 24px rgba(0,0,0,0.3)'
-                const mainBorder = isMain
-                  ? `1.5px solid rgba(212,175,55,${mouseInside ? 0.2 * glowScale : 0.15})`
-                  : '1px solid rgba(212,175,55,0.04)'
-
-                // 扇形偏移：每张牌旋转+平移，形成扇面
-                // 左牌：向左下旋转展开，右牌：向右下旋转展开
-                const tx = Math.sin(card.angle * Math.PI / 180) * (CARD_W * 0.45)
-                const ty = Math.abs(Math.cos(card.angle * Math.PI / 180) * (CARD_W * 0.2))
-
-                return (
-                  <div
-                    key={card.id}
-                    className="absolute"
-                    style={{
-                      width: card.w,
-                      height: card.h,
-                      transform: `
-                        rotate(${card.angle}deg)
-                        translate(${card.id === 'left' ? -tx : card.id === 'right' ? tx : 0}px, ${ty}px)
-                      `,
-                      transformOrigin: 'bottom center',
-                      filter: `blur(${card.blur}px) brightness(${card.brightness})`,
-                      opacity: card.opacity,
-                      border: mainBorder,
-                      boxShadow: mainGlow,
-                      zIndex: card.z,
-                      transition: 'border 0.3s ease, box-shadow 0.3s ease',
-                    }}>
-                    <img
-                      src={card.src}
-                      alt={card.name}
-                      draggable={false}
+              {/* 3D卡片圈 */}
+              <div
+                className="absolute"
+                style={{
+                  left:'50%', top:'50%',
+                  transform: `translate(-50%,-50%) rotateY(${angle}deg)`,
+                  transformStyle: 'preserve-3d',
+                }}>
+                {cards.map((c, i) => {
+                  const cardAngle = i * step
+                  const isSelected = i === selectedIdx
+                  return (
+                    <div
+                      key={c.num}
+                      className="absolute"
                       style={{
-                        width:'100%', height:'100%',
-                        objectFit:'cover', display:'block',
-                        borderRadius:'12px',
-                      }}/>
-                  </div>
-                )
-              })}
+                        width: CARD_W,
+                        height: CARD_H,
+                        transform: `rotateY(${cardAngle}deg) translateZ(${radius}px) rotateY(${-cardAngle}deg)`,
+                        transformStyle: 'preserve-3d',
+                      }}>
+                      <div
+                        className="rounded-xl overflow-hidden w-full h-full"
+                        style={{
+                          border: isSelected
+                            ? '2px solid rgba(212,175,55,0.35)'
+                            : '1px solid rgba(212,175,55,0.08)',
+                          boxShadow: isSelected
+                            ? '0 0 40px rgba(212,175,55,0.08), 0 10px 30px rgba(0,0,0,0.4)'
+                            : '0 4px 12px rgba(0,0,0,0.3)',
+                          filter: isSelected ? 'none' : 'brightness(0.6) blur(0.4px)',
+                          transition: 'all 0.3s ease',
+                        }}>
+                        <img
+                          src={c.src}
+                          alt={c.name}
+                          draggable={false}
+                          style={{
+                            width:'100%', height:'100%',
+                            objectFit:'cover', display:'block',
+                          }}/>
+                      </div>
+                      {/* 选中牌的名称提示 */}
+                      {isSelected && (
+                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                          <span className="text-xs tracking-[2px]" style={{ color:'#D4AF37' }}>
+                            {c.num} · {c.name} · {c.en}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </div>
