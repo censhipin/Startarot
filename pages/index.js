@@ -453,7 +453,6 @@ function HeroSection() {
     { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
 
-  const radius = 280
   const step = 360 / cards.length
 
   // 动画循环：角度持续增加
@@ -539,18 +538,22 @@ function HeroSection() {
                   zIndex:0,
                 }}/>
 
-              {/* 3D旋转架 */}
+              {/* 3D旋转架 - 锥形圈 */}
               <div className="carousel3d"
                 style={{ transform: `rotateY(${angle}deg)` }}>
                 {cards.map((card, i) => {
                   const cardAngle = i * step
+                  // 锥形：底部收窄（radius小+靠下），顶部展开（radius大+靠上）
+                  const level = i / (cards.length - 1) // 0~1 底部到顶部
+                  const coneRadius = 200 + level * 130   // 底部200px → 顶部330px
+                  const coneY = 40 - level * 80          // 底部下移40px → 顶部上移40px
                   return (
                     <div key={card.num}
                       className="card3d"
                       style={{
                         width: 180,
                         height: 252,
-                        transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
+                        transform: `rotateY(${cardAngle}deg) translateZ(${coneRadius}px) translateY(${coneY}px)`,
                       }}>
                       <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
                         style={{
