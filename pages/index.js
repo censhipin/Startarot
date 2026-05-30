@@ -441,8 +441,6 @@ function HeroSection() {
 
   const radius = 280
   const step = 360 / cards.length
-  const CARD_H = 260
-  const CARD_W = Math.round(CARD_H / 7 * 5)
 
   // 动画循环：角度持续增加
   useEffect(() => {
@@ -465,17 +463,6 @@ function HeroSection() {
     const idx = Math.round(normalized / step) % cards.length
     setSelectedIdx(idx)
   }, [angle])
-
-  // 计算每张卡牌的2D位置
-  const cardPositions = cards.map((_, i) => {
-    const a = (angle + i * step) * Math.PI / 180
-    return {
-      x: Math.sin(a) * radius,
-      z: Math.cos(a) * radius, // z depth: positive = in front
-    }
-  })
-
-  const FLEX_RIGHT = 'flex-[0_0_380px] max-lg:flex-[0_0_260px] max-lg:mb-8'
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
@@ -522,13 +509,14 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 3D旋转卡牌圈（JS定位） */}
-          <div className={FLEX_RIGHT}
+          {/* 右侧 · 3D旋转卡牌圈（CSS preserve-3d） */}
+          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px]"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none mx-auto"
-              style={{ width:'100%', maxWidth:380, height:400 }}>
-              {/* 中心辉光 */}
+            <div className="relative select-none"
+              style={{ width:'100%', height:400, perspective:1000 }}>
+
+              {/* 中心环境光晕 */}
               <div className="absolute pointer-events-none"
                 style={{
                   left:'50%', top:'50%', width:300, height:300,
@@ -536,57 +524,50 @@ function HeroSection() {
                   background:'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 50%)',
                   zIndex:0,
                 }}/>
-              <div className="absolute pointer-events-none"
+
+              {/* 3D旋转架 */}
+              <div className="absolute inset-0 flex items-center justify-center"
                 style={{
-                  left:'50%', top:'50%', width:180, height:180,
-                  transform:'translate(-50%,-50%)',
-                  background:'radial-gradient(circle, rgba(122,77,255,0.03) 0%, transparent 50%)',
-                  zIndex:0,
-                }}/>
-
-              {/* 卡牌按JS计算的2D位置渲染 */}
-              {cards.map((c, i) => {
-                const pos = cardPositions[i]
-                const isSelected = i === selectedIdx
-                // z值决定：大小、模糊、亮度、层级
-                const zNorm = (pos.z + radius) / (radius * 2) // 0~1
-                const scale = 0.55 + 0.45 * zNorm
-                const blur = (1 - zNorm) * 1.5
-                const opacity = 0.3 + 0.7 * zNorm
-                const zIndex = Math.round(pos.z + radius)
-
-                return (
-                  <div
-                    key={c.num}
-                    className="absolute"
-                    style={{
-                      left: `calc(50% + ${pos.x}px)`,
-                      top: `calc(50% + ${pos.y || 0}px)`,
-                      width: CARD_W,
-                      height: CARD_H,
-                      transform: `translate(-50%,-50%) scale(${scale})`,
-                      filter: `blur(${blur}px)`,
-                      opacity: opacity,
-                      zIndex: zIndex,
-                      transition: 'all 0.05s linear',
-                    }}>
-                    <div
-                      className="rounded-xl overflow-hidden w-full h-full"
+                  transformStyle: 'preserve-3d',
+                  transform: `rotateY(${angle}deg)`,
+                }}>
+                {cards.map((card, i) => {
+                  const cardAngle = i * step
+                  return (
+                    <div key={card.num}
+                      className="absolute"
                       style={{
-                        border: isSelected
-                          ? '2px solid rgba(212,175,55,0.35)'
-                          : '1px solid rgba(212,175,55,0.06)',
-                        boxShadow: isSelected
-                          ? '0 0 40px rgba(212,175,55,0.1), 0 10px 30px rgba(0,0,0,0.4)'
-                          : '0 4px 12px rgba(0,0,0,0.3)',
+                        width: 180,
+                        height: 252,
+                        transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
+                        transformStyle: 'preserve-3d',
                       }}>
-                      <img src={c.src} alt={c.name}
-                        draggable={false}
-                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                      <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
+                        style={{
+                          border: '1px solid rgba(212,175,55,0.15)',
+                          boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+                        }}>
+                        <img src={card.src} alt={card.name}
+                          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+
+              {/* 当前卡牌信息 */}
+              <div className="absolute left-1/2 -translate-x-1/2 text-center"
+                style={{ bottom: 20 }}>
+                <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
+                  {cards[selectedIdx].num} · {cards[selectedIdx].en}
+                </p>
+                <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
+                  {cards[selectedIdx].name}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
+                  {cards[selectedIdx].mean}
+                </p>
+              </div>
             </div>
           </div>
         </div>
