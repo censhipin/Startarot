@@ -463,13 +463,11 @@ function HeroSection() {
     }
   }, [])
 
-  // 主牌尺寸 = 容器高度60%，按5:7比例计算宽度
-  // 右区容器 520px 宽 × ~540px 高
-  const CONTAINER_H = 540
-  const MAIN_H = Math.round(CONTAINER_H * 0.63)   // 主牌高度 ≈ 340px
-  const MAIN_W = Math.round(MAIN_H / 7 * 5)        // 5:7比例 → ≈243px
-  const BACK_W = Math.round(MAIN_W * 0.55)          // 辅助牌缩小~45%
-  const BACK_H = Math.round(BACK_W / 5 * 7)
+  // 主牌高度500-600px，按5:7比例算宽度
+  const MAIN_H = 520
+  const MAIN_W = Math.round(MAIN_H / 7 * 5)        // 5:7比例 → 371px
+  const BACK_W = Math.round(MAIN_W * 0.6)           // 辅助牌缩小40% = 60%主牌大小 → 223px
+  const BACK_H = Math.round(BACK_W / 5 * 7)         // 辅助牌高度 → 312px
 
   // 金色辉光强度基于鼠标位置
   const glowScale = mouseInside ? 1 + (Math.abs(tilt.x) + Math.abs(tilt.y)) / 10 * 0.3 : 1
@@ -482,9 +480,9 @@ function HeroSection() {
       en:'The Star',
       w:MAIN_W, h:MAIN_H,
       x:0, y:0,
-      blur:0, z:3,
+      blur:0, z:5,
       brightness:1, opacity:1,
-      floatAmt:6, tilt:0, dur:10, delay:0,
+      floatAmt:4, dur:10, delay:0,
     },
     {
       id:'backLeft',
@@ -492,10 +490,10 @@ function HeroSection() {
       name:'金牛座',
       en:'Taurus',
       w:BACK_W, h:BACK_H,
-      x:-70, y:-30,
-      blur:3.5, z:1,
-      brightness:0.25, opacity:0.35,
-      floatAmt:8, tilt:0, dur:11, delay:1.8,
+      x:-80, y:-20,
+      blur:4, z:2,
+      brightness:0.3, opacity:0.3,
+      floatAmt:6, dur:11, delay:1.5,
     },
     {
       id:'backRight',
@@ -503,10 +501,10 @@ function HeroSection() {
       name:'水瓶座',
       en:'Aquarius',
       w:BACK_W, h:BACK_H,
-      x:70, y:30,
-      blur:3.5, z:1,
-      brightness:0.25, opacity:0.35,
-      floatAmt:-7, tilt:0, dur:12, delay:0.9,
+      x:80, y:20,
+      blur:4, z:2,
+      brightness:0.3, opacity:0.3,
+      floatAmt:-5, dur:12, delay:0.8,
     },
   ]
 
@@ -557,37 +555,38 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 景深卡牌阵 + 鼠标跟随偏转 */}
+          {/* 右侧 · 宇宙漂浮塔罗牌阵 */}
           <div className={FLEX_RIGHT} ref={containerRef}>
             <div
               className="relative select-none mx-auto"
               style={{
-                width:'100%', maxWidth:520, height:CONTAINER_H,
-                perspective: 900,
+                width:'100%', maxWidth:520, height:MAIN_H + 140,
+                perspective: 1000,
                 transformStyle: 'preserve-3d',
                 transform: mouseInside ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` : 'none',
                 transition: 'transform 0.15s ease-out',
               }}>
-              {/* 主牌后方光晕层次 */}
+              {/* 主牌金色辉光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'50%', width:MAIN_W * 1.8, height:MAIN_H * 1.3,
+                  left:'50%', top:'50%', width:MAIN_W * 2, height:MAIN_H * 1.4,
                   transform:'translate(-50%,-50%)',
-                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.06 * glowScale}) 0%, rgba(212,175,55,${0.02 * glowScale}) 35%, transparent 65%)`,
+                  background:`radial-gradient(ellipse, rgba(212,175,55,${0.08 * glowScale}) 0%, rgba(212,175,55,${0.025 * glowScale}) 30%, transparent 60%)`,
                   zIndex:0,
-                  transition: 'all 0.3s ease',
+                  transition: 'all 0.4s ease',
                 }}/>
+              {/* 紫色神秘光晕 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'43%', top:'52%', width:MAIN_W * 1.2, height:MAIN_H * 0.8,
+                  left:'42%', top:'48%', width:MAIN_W * 1.3, height:MAIN_H * 0.9,
                   transform:'translate(-50%,-50%)',
                   background:'radial-gradient(circle, rgba(122,77,255,0.04) 0%, transparent 50%)',
                   zIndex:0,
                 }}/>
-              {/* 底部微弱星辉 */}
+              {/* 底部辉光 */}
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'70%', width:200, height:200,
+                  left:'50%', top:'68%', width:250, height:250,
                   transform:'translate(-50%,-50%)',
                   background:'radial-gradient(circle, rgba(200,220,255,0.03) 0%, transparent 60%)',
                   zIndex:0,
@@ -596,17 +595,16 @@ function HeroSection() {
               {cards.map((card, i) => {
                 const animName = `heroFloat${i}`
                 const isMain = card.id === 'main'
-                // 主牌额外辉光
                 const mainGlow = isMain && mouseInside
-                  ? `0 30px 80px rgba(0,0,0,0.5), 0 0 ${40 * glowScale}px rgba(212,175,55,${0.12 * glowScale}), 0 0 ${80 * glowScale}px rgba(212,175,55,${0.04 * glowScale})`
+                  ? `0 30px 80px rgba(0,0,0,0.5), 0 0 ${50 * glowScale}px rgba(212,175,55,${0.15 * glowScale}), 0 0 ${100 * glowScale}px rgba(212,175,55,${0.05 * glowScale})`
                   : isMain
                     ? '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(212,175,55,0.08)'
-                    : '0 10px 30px rgba(0,0,0,0.3)'
+                    : '0 10px 30px rgba(0,0,0,0.4)'
                 const mainBorder = isMain
                   ? mouseInside
-                    ? `1.5px solid rgba(212,175,55,${0.25 * glowScale})`
-                    : '1.5px solid rgba(212,175,55,0.15)'
-                  : '1px solid rgba(212,175,55,0.04)'
+                    ? `1.5px solid rgba(212,175,55,${0.3 * glowScale})`
+                    : '1.5px solid rgba(212,175,55,0.2)'
+                  : '1px solid rgba(212,175,55,0.06)'
                 return (
                   <div key={card.id}
                     className="absolute"
@@ -626,7 +624,6 @@ function HeroSection() {
                         opacity: card.opacity,
                         border: mainBorder,
                         boxShadow: mainGlow,
-                        transform: `rotateY(${card.tilt}deg)`,
                         transition: 'border 0.3s ease, box-shadow 0.3s ease',
                       }}>
                       <img src={card.src} alt={card.name}
@@ -639,9 +636,9 @@ function HeroSection() {
               <style dangerouslySetInnerHTML={{ __html: cards.map((c, i) => `
                 @keyframes heroFloat${i} {
                   0%,100% { transform: translate(-50%,-50%) translateY(0px) translateX(0px); }
-                  25% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.6}px) translateX(${c.floatAmt * 0.2}px); }
-                  50% { transform: translate(-50%,-50%) translateY(${c.floatAmt * 0.3}px) translateX(${-c.floatAmt * 0.15}px); }
-                  75% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.2}px) translateX(${c.floatAmt * 0.1}px); }
+                  25% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.6}px) translateX(${c.floatAmt * 0.25}px); }
+                  50% { transform: translate(-50%,-50%) translateY(${c.floatAmt * 0.35}px) translateX(${-c.floatAmt * 0.2}px); }
+                  75% { transform: translate(-50%,-50%) translateY(${-c.floatAmt * 0.15}px) translateX(${c.floatAmt * 0.1}px); }
                 }
               `).join('') }}/>
             </div>
