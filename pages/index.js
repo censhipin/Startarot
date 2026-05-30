@@ -117,6 +117,20 @@ function GlobalStyles() {
       ::-webkit-scrollbar-track { background:#05050C; }
       ::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.2); border-radius:3px; }
 
+      /* ===== 3D旋转卡牌 ===== */
+      .scene3d { perspective: 1000px; }
+      .carousel3d {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+      .card3d {
+        position: absolute;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+      }
+
       .flip-card { perspective:1200px; }
       .flip-inner {
         position:relative; width:100%; height:100%;
@@ -509,12 +523,12 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 3D旋转卡牌圈（CSS preserve-3d） */}
+          {/* 右侧 · 3D旋转卡牌圈 */}
           <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_220px]"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none"
-              style={{ width:'100%', height:400, perspective:1000 }}>
+            <div className="scene3d relative select-none"
+              style={{ width:'100%', height:400 }}>
 
               {/* 中心环境光晕 */}
               <div className="absolute pointer-events-none"
@@ -526,21 +540,17 @@ function HeroSection() {
                 }}/>
 
               {/* 3D旋转架 */}
-              <div className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  transformStyle: 'preserve-3d',
-                  transform: `rotateY(${angle}deg)`,
-                }}>
+              <div className="carousel3d"
+                style={{ transform: `rotateY(${angle}deg)` }}>
                 {cards.map((card, i) => {
                   const cardAngle = i * step
                   return (
                     <div key={card.num}
-                      className="absolute"
+                      className="card3d"
                       style={{
                         width: 180,
                         height: 252,
                         transform: `rotateY(${cardAngle}deg) translateZ(${radius}px)`,
-                        transformStyle: 'preserve-3d',
                       }}>
                       <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
                         style={{
