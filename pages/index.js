@@ -91,6 +91,7 @@ export default function Home() {
         <PopularSection />
         <TrendingSection />
         <ExampleSection />
+        <SpreadSection />
         <TarotIntro />
         <GallerySection />
         <FeaturesSection />
@@ -694,6 +695,70 @@ function ExampleSection() {
                   color: '#07060a',
                 }}>
                 我也要测算 →
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ================================ 热门牌阵 ================================ */
+function SpreadSection() {
+  const spreads = [
+    { name:'爱情牌阵', desc:'感情走向、桃花运势、复合机会', cards:[CARDS.lovers, CARDS.star, CARDS.sun] },
+    { name:'事业牌阵', desc:'职场发展、跳槽时机、创业方向', cards:[CARDS.magician, CARDS.chariot, CARDS.world] },
+    { name:'学业牌阵', desc:'考试运势、专业选择、学业瓶颈', cards:[CARDS.priestess, CARDS.hermit, CARDS.strength] },
+    { name:'运势牌阵', desc:'综合运势、近期提醒、能量指引', cards:[CARDS.wheel, CARDS.moon, CARDS.judgement] },
+    { name:'人生方向牌阵', desc:'人生抉择、迷茫指引、目标规划', cards:[CARDS.fool, CARDS.death, CARDS.temperance] },
+    { name:'财富牌阵', desc:'财运走势、投资时机、财务建议', cards:[CARDS.empress, CARDS.justice, CARDS.wheel] },
+    { name:'关系匹配牌阵', desc:'两人契合度、关系走向、改善建议', cards:[CARDS.lovers, CARDS.priestess, CARDS.star] },
+    { name:'每日指引牌阵', desc:'一日运势、今日提醒、能量聚焦', cards:[CARDS.star] },
+  ]
+
+  return (
+    <section className="relative z-10 py-20"
+      style={{
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
+      }}>
+      <div className="max-w-[1100px] mx-auto px-6">
+        <div className="text-center mb-12">
+          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>POPULAR SPREADS</p>
+          <h2 className="text-3xl font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>热门牌阵</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>选择适合你的牌阵，开始占卜之旅</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {spreads.map((s, i) => (
+            <div key={i}
+              className="p-4 rounded-xl transition-all duration-400 hover:-translate-y-1 group"
+              style={{
+                background: 'rgba(255,255,255,0.02)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(212,175,55,0.06)',
+              }}>
+              <h3 className="text-sm f-serif font-bold mb-1" style={{ color:'#FFF8E7' }}>{s.name}</h3>
+              <p className="text-[10px] mb-3 leading-relaxed line-clamp-2" style={{ color:'#7A6D8A' }}>{s.desc}</p>
+
+              <div className="flex gap-1.5 mb-3 justify-center">
+                {s.cards.map((src, j) => (
+                  <div key={j} className="rounded overflow-hidden flex-1"
+                    style={{ border:'1px solid rgba(212,175,55,0.06)', background:'transparent', maxWidth:70 }}>
+                    <img src={src} alt=""
+                      style={{ width:'100%', aspectRatio:'5/7', objectFit:'contain', display:'block' }}/>
+                  </div>
+                ))}
+              </div>
+
+              <a href="#cta"
+                className="inline-block w-full text-center py-2 rounded-lg text-[10px] font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
+                  color: '#07060a',
+                }}>
+                立即抽牌 →
               </a>
             </div>
           ))}
