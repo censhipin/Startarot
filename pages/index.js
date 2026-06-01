@@ -1209,24 +1209,33 @@ function ZodiacSection() {
       {/* 占星法阵背景 */}
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
         <div className="relative w-full max-w-[900px] aspect-square"
-          style={{ transform:'translateY(-8%)', opacity:0.08 }}>
-          <div className="absolute inset-[3%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
-          <div className="absolute inset-[13%] rounded-full"
-            style={{ border:'1px solid #D4AF37', borderStyle:'dashed' }}/>
-          <div className="absolute inset-[23%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
-          <div className="absolute inset-[8%] rounded-full"
-            style={{ background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)', opacity:0.4 }}/>
-          <div className="absolute inset-[2%]"
-            style={{ background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.2%, transparent 40.5%)' }}/>
+          style={{ transform:'translateY(-8%)' }}>
+          {/* 背景光晕 */}
+          <div className="absolute inset-[10%] rounded-full opacity-[0.06]"
+            style={{ background:'radial-gradient(circle, #D4AF37 0%, transparent 60%)' }}/>
+          {/* 圆环 - 提高透明度 */}
+          <div className="absolute inset-[3%] rounded-full opacity-[0.15]"
+            style={{ border:'1.5px solid #D4AF37' }}/>
+          <div className="absolute inset-[13%] rounded-full opacity-[0.12]"
+            style={{ border:'1.5px solid #D4AF37', borderStyle:'dashed' }}/>
+          <div className="absolute inset-[23%] rounded-full opacity-[0.15]"
+            style={{ border:'1.5px solid #D4AF37' }}/>
+          {/* 刻度 - 清晰可见 */}
+          <div className="absolute inset-[8%] rounded-full opacity-[0.15]"
+            style={{ background:'repeating-conic-gradient(#D4AF37 0deg 1.5deg, transparent 1.5deg 8deg)' }}/>
+          {/* 星轨射线 */}
+          <div className="absolute inset-[2%] opacity-[0.08]"
+            style={{ background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.2%, transparent 41%)' }}/>
+          {/* 十二宫符号 - 更亮 */}
           {ZODIACS.map((z, i) => {
             const rad = ((i / 12) * 360 - 90) * Math.PI / 180
             return (
-              <span key={i} className="absolute text-xs"
+              <span key={i} className="absolute text-sm"
                 style={{
                   left:`${50 + 38 * Math.cos(rad)}%`,
                   top:`${50 + 38 * Math.sin(rad)}%`,
                   transform:'translate(-50%,-50%)',
-                  color:'#D4AF37', opacity:0.5,
+                  color:'#D4AF37', opacity:0.35,
                 }}>
                 {z.sym}
               </span>
@@ -1362,33 +1371,32 @@ function ZodiacSection() {
 function CTASection() {
   return (
     <section id="cta" className="relative z-10 overflow-hidden"
-      style={{ minHeight: '90vh' }}>
-      {/* 背景渐变 */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            linear-gradient(180deg,
-              #0A0820 0%,
-              #0F0A2E 20%,
-              #12052B 45%,
-              #0F0A2E 70%,
-              #080D24 100%
-            )
-          `
-        }}>
-        {/* 大型星云 */}
+      style={{
+        minHeight: '85vh',
+        background: `
+          linear-gradient(180deg,
+            #0A0820 0%,
+            #0F0A2E 20%,
+            #12052B 45%,
+            #0F0A2E 70%,
+            #080D24 100%
+          )
+        `
+      }}>
+      {/* 大型星云 */}
+      <div className="absolute pointer-events-none" style={{ inset:0 }}>
         <div className="absolute top-[15%] left-[20%] w-[600px] h-[500px] rounded-full opacity-[0.10]"
           style={{ background:'radial-gradient(ellipse, #7A4DFF 0%, transparent 55%)' }}/>
         <div className="absolute top-[30%] right-[10%] w-[500px] h-[400px] rounded-full opacity-[0.08]"
           style={{ background:'radial-gradient(ellipse, #1A3A6B 0%, transparent 55%)' }}/>
         <div className="absolute top-[60%] left-[10%] w-[450px] h-[350px] rounded-full opacity-[0.06]"
           style={{ background:'radial-gradient(ellipse, #2A1A5A 0%, transparent 50%)' }}/>
-        {/* 金色光晕 */}
-        <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full opacity-[0.08]"
+        {/* 金色光晕（用opacity动画，不用transform） */}
+        <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full"
           style={{
             background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 65%)',
             transform:'translate(-50%,-50%)',
-            animation: 'goldenRadiate 6s ease-in-out infinite',
+            animation: 'goldenPulse 6s ease-in-out infinite',
           }}/>
       </div>
 
@@ -1403,16 +1411,17 @@ function CTASection() {
           resize()
           window.addEventListener('resize', resize)
           const particles = []
-          for (let i = 0; i < 40; i++) {
+          for (let i = 0; i < 30; i++) {
             particles.push({
               x: Math.random() * w, y: Math.random() * h,
-              r: Math.random() * 2 + 0.5, a: Math.random() * 0.4 + 0.05,
+              r: Math.random() * 2 + 0.5, a: Math.random() * 0.3 + 0.05,
               speed: Math.random() * 0.08 + 0.02,
               driftX: (Math.random() - 0.5) * 0.2,
               driftY: (Math.random() - 0.5) * 0.2,
               phase: Math.random() * Math.PI * 2,
             })
           }
+          let animId
           function draw() {
             ctx.clearRect(0, 0, w, h)
             const t = Date.now() / 1000
@@ -1425,39 +1434,25 @@ function CTASection() {
               ctx.fillStyle = `rgba(212, 175, 55, ${p.a * pulse})`
               ctx.fill()
             })
-            requestAnimationFrame(draw)
+            animId = requestAnimationFrame(draw)
           }
           draw()
         }} className="absolute inset-0 w-full h-full"/>
       </div>
 
-      <div className="relative z-10 min-h-[90vh] flex flex-col items-center justify-center text-center px-6 py-20">
-        {/* 占星法阵 / 发光塔罗牌 */}
-        <div className="relative mb-10">
-          {/* 外层光环 */}
-          <div className="w-44 h-44 md:w-52 md:h-52 rounded-full mx-auto relative flex items-center justify-center"
+      <div className="relative z-10 min-h-[85vh] flex flex-col items-center justify-center text-center px-6 py-20">
+        {/* 发光塔罗牌 */}
+        <div className="relative mb-8">
+          {/* 卡牌本体 */}
+          <div className="w-24 h-32 md:w-28 md:h-40 rounded-xl overflow-hidden mx-auto relative"
             style={{
-              animation: 'slowRotate 20s linear infinite',
+              border:'2px solid rgba(212,175,55,0.25)',
+              boxShadow:'0 0 50px rgba(212,175,55,0.1), 0 0 100px rgba(212,175,55,0.04)',
+              animation: 'cardFloat 4s ease-in-out infinite',
             }}>
-            <div className="absolute inset-0 rounded-full"
-              style={{ border:'1px solid rgba(212,175,55,0.15)' }}/>
-            <div className="absolute inset-[10%] rounded-full"
-              style={{ border:'1px solid rgba(212,175,55,0.1)', borderStyle:'dashed' }}/>
-            <div className="absolute inset-[20%] rounded-full"
-              style={{ border:'1px solid rgba(212,175,55,0.08)' }}/>
-            {/* 中央卡牌 */}
-            <div className="w-20 h-28 md:w-24 md:h-32 rounded-lg overflow-hidden relative z-10"
-              style={{
-                border:'2px solid rgba(212,175,55,0.3)',
-                boxShadow:'0 0 40px rgba(212,175,55,0.15), 0 0 80px rgba(212,175,55,0.05)',
-                animation: 'gentleFloat 4s ease-in-out infinite',
-              }}>
-              <img src={CARDS.star} alt="星星"
-                style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
-            </div>
+            <img src={CARDS.star} alt="星星"
+              style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
           </div>
-          <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-[#D4AF37] opacity-[0.08] blur-md"/>
-          <div className="absolute -bottom-2 -right-2 w-5 h-5 rounded-full bg-[#D4AF37] opacity-[0.06] blur-sm"/>
         </div>
 
         {/* 标题 */}
@@ -1465,30 +1460,12 @@ function CTASection() {
           你的答案已经隐藏在牌阵之中
         </h2>
 
-        {/* 副标题 */}
         <p className="text-sm leading-relaxed mb-6 max-w-md" style={{ color:'#B8A9C9' }}>
           爱情 · 事业 · 财富 · 学业 · 未来方向
         </p>
-        <p className="text-xs leading-relaxed mb-10 italic" style={{ color:'#7A6D8A' }}>
+        <p className="text-xs leading-relaxed mb-12 italic" style={{ color:'#7A6D8A' }}>
           「每一次抽牌，都是一次与命运的对话」
         </p>
-
-        {/* 小程序码 */}
-        <div className="mb-10">
-          <div className="w-28 h-28 md:w-32 md:h-32 bg-white rounded-xl p-2.5 mx-auto"
-            style={{
-              boxShadow:'0 0 30px rgba(212,175,55,0.15), 0 0 60px rgba(212,175,55,0.05)',
-              border:'1.5px solid rgba(212,175,55,0.2)',
-            }}>
-            <div className="w-full h-full rounded-lg flex items-center justify-center text-xs"
-              style={{ background:'#f0ebe0', color:'#999' }}>
-              小程序码<br/>（待替换）
-            </div>
-          </div>
-          <p className="text-xs mt-3 tracking-[2px]" style={{ color:'#5A4D6A' }}>
-            微信扫码 · 即刻进入星塔
-          </p>
-        </div>
 
         {/* 按钮 */}
         <div className="flex gap-4 justify-center flex-wrap">
@@ -1502,11 +1479,10 @@ function CTASection() {
             立即开始测算
           </a>
           <a href="#gallery"
-            className="inline-block py-4 px-10 rounded-xl text-base no-underline tracking-[3px] transition-all duration-500 hover:-translate-y-1"
+            className="inline-block py-4 px-10 rounded-xl text-base no-underline tracking-[3px] transition-all duration-500"
             style={{
               border:'1px solid rgba(212,175,55,0.15)',
               color:'#D4AF37',
-              boxShadow:'0 0 20px rgba(212,175,55,0.03)',
             }}>
             浏览完整牌库
           </a>
@@ -1514,17 +1490,13 @@ function CTASection() {
       </div>
 
       <style>{`
-        @keyframes slowRotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes gentleFloat {
+        @keyframes cardFloat {
           0%,100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
+          50% { transform: translateY(-8px); }
         }
-        @keyframes goldenRadiate {
-          0%,100% { opacity:0.08; transform:translate(-50%,-50%) scale(1); }
-          50% { opacity:0.14; transform:translate(-50%,-50%) scale(1.12); }
+        @keyframes goldenPulse {
+          0%,100% { opacity:0.08; }
+          50% { opacity:0.14; }
         }
       `}</style>
     </section>
