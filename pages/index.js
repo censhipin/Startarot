@@ -1034,7 +1034,6 @@ function ZodiacSection() {
                       )}
                     </div>
                   </div>
-                </div>
               )
             })}
           </div>
