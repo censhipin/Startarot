@@ -435,13 +435,12 @@ function NavBar() {
   )
 }
 
-/* ================================ HERO · 3D旋转卡牌 ================================ */
+/* ================================ HERO · 椭圆轨道漂浮卡牌 ================================ */
 function HeroSection() {
-  const [angle, setAngle] = useState(0)
+  const [t, setT] = useState(0)
   const [paused, setPaused] = useState(false)
   const animRef = useRef(null)
   const lastTime = useRef(0)
-  const [selectedIdx, setSelectedIdx] = useState(0)
 
   const cards = [
     { src: CARDS.fool, name:'愚人', num:'0', en:'The Fool', mean:'新的开始 · 冒险 · 纯真' },
@@ -451,9 +450,14 @@ function HeroSection() {
     { src: CARDS.world, name:'世界', num:'XXI', en:'The World', mean:'完成 · 圆满 · 整合' },
   ]
 
-  const radius = 220
-  const step = 360 / cards.length
-  const tiltAmount = 35 // 前后倾斜幅度(px)
+  const CARD_COUNT = cards.length
+  const STEP = (2 * Math.PI) / CARD_COUNT
+  const ORBIT_X = 110
+  const ORBIT_Y = 75
+  const TILT_Y = 50
+  const BASE_W = 120
+  const SCALE_MIN = 0.45
+  const SCALE_MAX = 1.35
 
   useEffect(() => {
     if (paused) return
@@ -462,25 +466,50 @@ function HeroSection() {
       if (!last) last = time
       const delta = time - last
       last = time
-      setAngle(prev => (prev + delta * 0.015) % 360)
+      setT(prev => (prev + delta * 0.00035) % (2 * Math.PI))
       animRef.current = requestAnimationFrame(animate)
     }
     animRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(animRef.current)
   }, [paused])
 
-  useEffect(() => {
-    const normalized = ((angle % 360) + 360) % 360
-    const idx = Math.round(normalized / step) % cards.length
-    setSelectedIdx(idx)
-  }, [angle])
+  function getCardProps(index) {
+    const angle = t + index * STEP
+    const cosA = Math.cos(angle)
+    const sinA = Math.sin(angle)
+    const depth = (cosA + 1) / 2
+    const x = sinA * ORBIT_X
+    const y = -cosA * TILT_Y + sinA * 6
+    const scale = SCALE_MIN + (SCALE_MAX - SCALE_MIN) * depth
+    const brightness = 0.3 + 0.7 * depth
+    const blur = (1 - depth) * 3.5
+    const zIndex = Math.round(100 + depth * 50)
+    return { x, y, scale, brightness, blur, zIndex, depth }
+  }
+
+  const frontIdx = (() => {
+    let maxDepth = -1, idx = 0
+    for (let i = 0; i < CARD_COUNT; i++) {
+      const p = getCardProps(i)
+      if (p.depth > maxDepth) { maxDepth = p.depth; idx = i }
+    }
+    return idx
+  })()
+
+  const frontCard = cards[frontIdx]
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-6 w-full">
-        <div className="flex items-center gap-12 max-lg:flex-col max-lg:text-center">
+      <div className="fixed pointer-events-none" style={{
+        left:'65%', top:'50%', width:400, height:400,
+        transform:'translate(-50%,-50%)',
+        background:'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 60%)',
+        zIndex:0,
+      }}/>
 
-          {/* 左侧文字 */}
+      <div className="max-w-[1200px] mx-auto px-6 w-full">
+        <div className="flex items-center gap-8 max-lg:flex-col max-lg:text-center">
+
           <div className="flex-1 max-lg:order-2">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm tracking-[3px] mb-6"
               style={{ background:'rgba(212,175,55,0.06)', border:'1px solid rgba(212,175,55,0.1)', color:'#D4AF37', fontSize:12 }}>
@@ -520,59 +549,55 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* 右侧 · 3D旋转卡牌 */}
-          <div className="flex-[0_0_280px] max-lg:order-1 max-lg:flex-[0_0_200px]"
+          <div className="flex-[0_0_300px] max-lg:order-1 max-lg:flex-[0_0_220px]"
                onMouseEnter={() => setPaused(true)}
                onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none" style={{ width:'100%', height:340, perspective:800 }}>
-
-              {/* 中心光晕 */}
+            <div className="relative select-none mx-auto" style={{ width:300, height:360, overflow:'visible' }}>
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'42%', width:200, height:260,
+                  left:'50%', top:'50%', width:240, height:180,
                   transform:'translate(-50%,-50%)',
-                  background:'radial-gradient(ellipse, rgba(212,175,55,0.05) 0%, transparent 60%)',
+                  background:'radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 55%)',
                   zIndex:0,
                 }}/>
 
-              {/* 3D旋转架 */}
-              <div className="absolute inset-0 flex items-center justify-center"
-                style={{ transformStyle:'preserve-3d', transform:`rotateY(${angle}deg)` }}>
-                {cards.map((card, i) => {
-                  const cardAngleRad = i * step * Math.PI / 180
-                  const yOffset = Math.cos(cardAngleRad) * tiltAmount
-                  return (
+              {cards.map((card, i) => {
+                const { x, y, scale, brightness, blur, zIndex } = getCardProps(i)
+                const w = BASE_W * scale
+                return (
                   <div key={card.num}
                     className="absolute"
                     style={{
-                      width:145, height:203,
-                      transform:`rotateY(${i * step}deg) translateZ(${radius}px) translateY(${yOffset}px)`,
-                      transformStyle:'preserve-3d',
+                      left: `calc(50% + ${x}px)`,
+                      top: `calc(50% + ${y}px)`,
+                      zIndex,
+                      transform: 'translate(-50%,-50%)',
                     }}>
-                    <div className="w-full h-full rounded-xl overflow-hidden cursor-pointer"
+                    <div className="rounded-xl overflow-hidden cursor-pointer transition-shadow duration-500"
                       style={{
-                        border:'1px solid rgba(212,175,55,0.15)',
-                        boxShadow:'0 8px 30px rgba(0,0,0,0.4)',
+                        width: w,
+                        height: w * 1.4,
+                        filter: `brightness(${brightness}) blur(${blur}px)`,
+                        border: '1px solid rgba(212,175,55,0.12)',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
                       }}>
                       <img src={card.src} alt={card.name}
                         style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
                     </div>
                   </div>
-                )})}
-              </div>
-
-              {/* 当前卡牌信息 - 放在旋转区域下方 */}
+                )
+              })}
             </div>
-            {/* 卡牌信息 - 在容器外面，确保不重叠 */}
-            <div className="text-center mt-3">
+
+            <div className="text-center mt-2">
               <p className="text-xs tracking-[3px]" style={{ color:'#D4AF37' }}>
-                {cards[selectedIdx].num} · {cards[selectedIdx].en}
+                {frontCard.num} · {frontCard.en}
               </p>
               <p className="text-lg f-serif font-bold mt-0.5" style={{ color:'#FFF8E7' }}>
-                {cards[selectedIdx].name}
+                {frontCard.name}
               </p>
               <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
-                {cards[selectedIdx].mean}
+                {frontCard.mean}
               </p>
               <p className="text-[10px] tracking-[3px] mt-2" style={{ color:'#4A3D5B' }}>
                 {paused ? '✦ 已暂停' : '鼠标悬停以暂停'}
