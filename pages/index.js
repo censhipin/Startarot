@@ -75,55 +75,6 @@ const ZODIACS = [
     desc:'富有想象力艺术天赋高', img:'/zodiac-pisces.jpg' },
 ]
 
-/* ================================ 78张牌数据 ================================ */
-const CARD_IMG = 'https://raw.githubusercontent.com/metabismuth/tarot-json/master/cards'
-const ALL_CARDS = (() => {
-  const major = [
-    { id:'m0', name:'愚人', en:'The Fool', num:'0', src:`${CARD_IMG}/m00.jpg`, upright:'新的开始、冒险、信任、纯真', reversed:'鲁莽、轻率', desc:'放下对未知的恐惧，勇敢迈出第一步。保持纯真的心去探索。' },
-    { id:'m1', name:'魔术师', en:'The Magician', num:'I', src:`${CARD_IMG}/m01.jpg`, upright:'创造力、自信、技能、资源', reversed:'操纵、才能浪费', desc:'你已拥有所需的一切资源，相信自己，去实现你的目标。' },
-    { id:'m2', name:'女祭司', en:'The High Priestess', num:'II', src:`${CARD_IMG}/m02.jpg`, upright:'直觉、内在智慧、神秘', reversed:'秘密、表面现象', desc:'静下来倾听你的内心，答案已在心中。相信你的直觉。' },
-    { id:'m3', name:'女皇', en:'The Empress', num:'III', src:`${CARD_IMG}/m03.jpg`, upright:'丰饶、母性、自然、舒适', reversed:'依赖、创造受阻', desc:'允许自己享受生活的美好，丰饶的季节已经到来。' },
-    { id:'m4', name:'皇帝', en:'The Emperor', num:'IV', src:`${CARD_IMG}/m04.jpg`, upright:'权威、结构、稳定', reversed:'专制、僵化', desc:'建立秩序是必要的，但不要变得僵化。真正的权威来自智慧。' },
-    { id:'m5', name:'教皇', en:'The Hierophant', num:'V', src:`${CARD_IMG}/m05.jpg`, upright:'传统、精神指引、信仰', reversed:'非正统、个人信念', desc:'遵循传统的指引，但也要保持自己的独立思考。' },
-    { id:'m6', name:'恋人', en:'The Lovers', num:'VI', src:`${CARD_IMG}/m06.jpg`, upright:'爱情、选择、和谐', reversed:'不合、失衡', desc:'面对选择时，跟随你的内心而非外界的期望。' },
-    { id:'m7', name:'战车', en:'The Chariot', num:'VII', src:`${CARD_IMG}/m07.jpg`, upright:'胜利、意志力、决心', reversed:'方向不明、失控', desc:'用坚定的意志控制对立的力量，胜利属于你。' },
-    { id:'m8', name:'力量', en:'Strength', num:'VIII', src:`${CARD_IMG}/m08.jpg`, upright:'勇气、内在力量、慈悲', reversed:'自我怀疑', desc:'真正的力量来自内心的温柔与坚定，用爱化解恐惧。' },
-    { id:'m9', name:'隐士', en:'The Hermit', num:'IX', src:`${CARD_IMG}/m09.jpg`, upright:'内省、智慧、寻找真理', reversed:'孤独、退缩', desc:'独处和反思是智慧的来源，答案会在寂静中浮现。' },
-    { id:'m10', name:'命运之轮', en:'Wheel of Fortune', num:'X', src:`${CARD_IMG}/m10.jpg`, upright:'变化、循环、转折点', reversed:'坏运气、抵制变化', desc:'变化是唯一不变的真理，新的阶段即将开启。' },
-    { id:'m11', name:'正义', en:'Justice', num:'XI', src:`${CARD_IMG}/m11.jpg`, upright:'公平、真相、因果报应', reversed:'不公、欺骗', desc:'真相终将浮出水面，做出对的选择，承担应有的责任。' },
-    { id:'m12', name:'倒吊人', en:'The Hanged Man', num:'XII', src:`${CARD_IMG}/m12.jpg`, upright:'暂停、牺牲、新视角', reversed:'拖延、抗拒', desc:'有时候需要暂停和放下，才能获得全新的视角。' },
-    { id:'m13', name:'死神', en:'Death', num:'XIII', src:`${CARD_IMG}/m13.jpg`, upright:'结束、转变、放下、新生', reversed:'抗拒改变', desc:'告别旧的才能迎接新的，放手是一种勇气也是一种智慧。' },
-    { id:'m14', name:'节制', en:'Temperance', num:'XIV', src:`${CARD_IMG}/m14.jpg`, upright:'平衡、调和、耐心', reversed:'失衡、过度', desc:'保持平衡，找到中庸之道，耐心等待最好的时机。' },
-    { id:'m15', name:'恶魔', en:'The Devil', num:'XV', src:`${CARD_IMG}/m15.jpg`, upright:'束缚、欲望、成瘾', reversed:'觉醒、挣脱', desc:'认清是什么在束缚你，你有力量挣脱。' },
-    { id:'m16', name:'高塔', en:'The Tower', num:'XVI', src:`${CARD_IMG}/m16.jpg`, upright:'剧变、崩塌、觉醒', reversed:'抵抗改变', desc:'旧的结构崩塌时不要恐慌，重建即是新生。' },
-    { id:'m17', name:'星星', en:'The Star', num:'XVII', src:`${CARD_IMG}/m17.jpg`, upright:'希望、灵感、治愈', reversed:'绝望、失去方向', desc:'保持希望，宇宙正在为你指引方向。' },
-    { id:'m18', name:'月亮', en:'The Moon', num:'XVIII', src:`${CARD_IMG}/m18.jpg`, upright:'直觉、恐惧、潜意识', reversed:'焦虑消散', desc:'你所恐惧的可能只是幻觉，真相会逐渐浮现。' },
-    { id:'m19', name:'太阳', en:'The Sun', num:'XIX', src:`${CARD_IMG}/m19.jpg`, upright:'喜悦、成功、活力', reversed:'暂时低落', desc:'你正处在光明之中，享受这份喜悦和成功。' },
-    { id:'m20', name:'审判', en:'Judgement', num:'XX', src:`${CARD_IMG}/m20.jpg`, upright:'重生、觉醒、清算', reversed:'自我怀疑', desc:'放下过去，迎接新生，现在是觉醒的时刻。' },
-    { id:'m21', name:'世界', en:'The World', num:'XXI', src:`${CARD_IMG}/m21.jpg`, upright:'完成、成就、圆满', reversed:'未完成、拖延', desc:'一个阶段圆满结束，庆祝之后新的循环即将开始。' },
-  ]
-  const suitCfg = [
-    { prefix:'w', name:'权杖', en:'Wands' }, { prefix:'c', name:'圣杯', en:'Cups' },
-    { prefix:'s', name:'宝剑', en:'Swords' }, { prefix:'p', name:'星币', en:'Pentacles' },
-  ]
-  const numNames = ['Ace','II','III','IV','V','VI','VII','VIII','IX','X','Page','Knight','Queen','King']
-  const minor = []
-  suitCfg.forEach(suit => {
-    for (let i = 1; i <= 14; i++) {
-      const num = numNames[i - 1]
-      minor.push({
-        id:`${suit.prefix}${String(i).padStart(2,'0')}`, name:`${suit.name}${num}`,
-        en:`${num} of ${suit.en}`, num,
-        src:`${CARD_IMG}/${suit.prefix}${String(i).padStart(2,'0')}.jpg`,
-        upright:'正位：代表该领域的积极能量与建设性发展',
-        reversed:'逆位：注意该领域的阻碍或失衡',
-        desc:`${num} · ${suit.name}——关注${suit.name}牌组的能量启示。`,
-      })
-    }
-  })
-  return [...major, ...minor]
-})()
-
 /* ================================ 主页面 ================================ */
 export default function Home() {
   return (
@@ -662,7 +613,8 @@ function FeaturesSection() {
   const [drawnCard, setDrawnCard] = useState(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const [shuffleIdx, setShuffleIdx] = useState(0)
+  const intervalRef = useRef(null)
+  const cardElRef = useRef(null)
 
   const startDraw = () => {
     if (isDrawing) return
@@ -670,19 +622,26 @@ function FeaturesSection() {
     setShowResult(false)
     setDrawnCard(null)
 
+    // 洗牌动画：快速切换卡牌
     let count = 0
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       count++
-      setShuffleIdx(Math.floor(Math.random() * ALL_CARDS.length))
-      if (count >= 20) {
-        clearInterval(interval)
-        const final = ALL_CARDS[Math.floor(Math.random() * ALL_CARDS.length)]
-        setDrawnCard(final)
+      const randomIdx = Math.floor(Math.random() * ALL_CARDS.length)
+      setDrawnCard(ALL_CARDS[randomIdx])
+      if (count >= 18) {
+        clearInterval(intervalRef.current)
+        // 最终确定
+        const finalIdx = Math.floor(Math.random() * ALL_CARDS.length)
+        setDrawnCard(ALL_CARDS[finalIdx])
         setIsDrawing(false)
         setShowResult(true)
       }
-    }, 100)
+    }, 80)
   }
+
+  useEffect(() => {
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [])
 
   return (
     <section id="features" className="relative z-10 py-24"
@@ -708,44 +667,28 @@ function FeaturesSection() {
             </p>
 
             <div className="flex gap-5 items-start">
-              {/* 左侧卡牌（加大到130px） */}
-              <div className="shrink-0" style={{ width:130 }}>
-                <div onClick={startDraw}
-                  className="rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 relative"
+              {/* 左侧卡牌 */}
+              <div className="shrink-0 relative" style={{ width:110 }}>
+                <div ref={cardElRef}
+                  className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${isDrawing ? 'animate-shuffle' : showResult ? '' : 'hover:-translate-y-1'}`}
                   style={{
-                    aspectRatio:'5/7',
-                    border: showResult ? '1.5px solid rgba(212,175,55,0.25)' : '1px solid rgba(212,175,55,0.12)',
-                    boxShadow: showResult ? '0 0 30px rgba(212,175,55,0.12)' : '0 4px 12px rgba(0,0,0,0.3)',
-                  }}>
-                  {isDrawing ? (
-                    <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
-                      style={{ background:'linear-gradient(145deg, #1a0f2a, #0f0818)' }}>
-                      <div key={shuffleIdx} className="absolute inset-0 flex items-center justify-center"
-                        style={{ animation:'fadeInFast 0.08s ease-out forwards' }}>
-                        <span className="text-xs tracking-[3px]" style={{ color:'rgba(212,175,55,0.6)' }}>
-                          {ALL_CARDS[shuffleIdx]?.num}
-                        </span>
-                      </div>
-                    </div>
-                  ) : showResult && drawnCard ? (
+                    aspectRatio: '5/7',
+                    border: drawnCard && showResult
+                      ? '1.5px solid rgba(212,175,55,0.25)'
+                      : '1px solid rgba(212,175,55,0.12)',
+                    boxShadow: drawnCard && showResult
+                      ? '0 0 30px rgba(212,175,55,0.12)'
+                      : '0 4px 12px rgba(0,0,0,0.3)',
+                  }}
+                  onClick={startDraw}>
+                  {drawnCard && showResult && drawnCard.src ? (
                     <img src={drawnCard.src} alt={drawnCard.name}
                       style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}/>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2"
                       style={{ background:'linear-gradient(145deg, #1a0f2a, #0f0818)' }}>
-                      <span className="text-xl" style={{ color:'rgba(212,175,55,0.3)' }}>✦</span>
-                      <span className="text-[10px] tracking-[3px]" style={{ color:'rgba(212,175,55,0.4)' }}>点击抽牌</span>
-                    </div>
-                  )}
-                </div>
-                {!showResult && !isDrawing && (
-                  <button onClick={startDraw}
-                    className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] cursor-pointer transition-all border-none hover:-translate-y-0.5"
-                    style={{ background:'linear-gradient(135deg, #8B6914, #D4AF37)', color:'#07060a' }}>
-                    抽一张
-                  </button>
-                )}
-              </div>
+                      <span className="text-lg" style={{ color:'rgba(212,175,55,0.3)' }}>✦</span>
+                      <span className="text-[10px] tracking-[3px]" style={{ color:'rgba(212,175,55,0.4)' }}>
                         {isDrawing ? '抽牌中...' : '点击抽牌'}
                       </span>
                     </div>
@@ -773,14 +716,11 @@ function FeaturesSection() {
                     <p className="text-xs mt-0.5" style={{ color:'#D4AF37' }}>{drawnCard.en}</p>
                     <div className="w-6 h-px my-2" style={{ background:'rgba(212,175,55,0.3)' }}/>
                     <p className="text-xs leading-relaxed" style={{ color:'#B8A9C9' }}>
-                      <span style={{ color:'#D4AF37' }}>今日指引 · </span>
-                      {drawnCard.desc?.substring(0, 25)}...
+                      <span style={{ color:'#D4AF37' }}>正位 · </span>
+                      {drawnCard.upright}
                     </p>
-                    <p className="text-xs mt-1" style={{ color:'#7A6D8A' }}>
-                      正位 · {drawnCard.upright?.substring(0, 18)}...
-                    </p>
-                    <p className="text-[10px] mt-2" style={{ color:'#5A4D6A' }}>
-                      点击下方查看完整解读
+                    <p className="text-xs mt-2 leading-relaxed" style={{ color:'#7A6D8A' }}>
+                      点击下方按钮查看78张牌完整解读与每日运势
                     </p>
                     <a href="#cta"
                       className="inline-block mt-3 py-2 px-5 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
