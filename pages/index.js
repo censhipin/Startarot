@@ -141,83 +141,97 @@ function GlobalStyles() {
 function CosmicBackground() {
   return (
     <>
-      {/* 底色：深色边缘 */}
+      {/* 底色 + 线性渐变 */}
       <div className="fixed inset-0 z-0 pointer-events-none"
-        style={{ background:'#060410' }}>
-        {/* 中心主光晕（径向，从中间扩散） */}
-        <div className="absolute top-[45%] left-[50%] w-[900px] h-[700px] rounded-full opacity-[1]"
+        style={{
+          background: `
+            linear-gradient(180deg,
+              #1A0A3A 0%,
+              #150E38 20%,
+              #0F2040 45%,
+              #0E1A38 55%,
+              #0D1230 70%,
+              #080A18 100%
+            )
+          `
+        }}>
+        {/* 银河光带（横向穿过页面中部） */}
+        <div className="absolute w-[900px] h-[350px] opacity-[0.12]"
           style={{
-            background:'radial-gradient(ellipse, #1A1040 0%, #140E35 30%, #0D0A25 55%, #080618 75%, transparent 100%)',
+            left:'50%', top:'48%',
+            background:'radial-gradient(ellipse, #3A6AB5 0%, rgba(58,106,181,0.05) 40%, rgba(42,90,150,0.02) 65%, transparent 80%)',
+            transform:'translate(-50%,-50%) rotate(-8deg)',
+          }}/>
+        <div className="absolute w-[1100px] h-[250px] opacity-[0.08]"
+          style={{
+            left:'50%', top:'48%',
+            background:'radial-gradient(ellipse, #6B8FC5 0%, rgba(107,143,197,0.03) 35%, transparent 65%)',
+            transform:'translate(-50%,-50%) rotate(-6deg)',
+          }}/>
+        {/* 银河中心亮区 */}
+        <div className="absolute w-[400px] h-[200px] opacity-[0.10]"
+          style={{
+            left:'50%', top:'48%',
+            background:'radial-gradient(ellipse, #8BAFE8 0%, rgba(139,175,232,0.04) 35%, transparent 60%)',
             transform:'translate(-50%,-50%)',
           }}/>
-        {/* 金色光晕 - 动态、不固定 */}
-        <div className="absolute w-[600px] h-[600px] rounded-full opacity-[0.12]"
+        {/* 上方紫色星云 */}
+        <div className="absolute w-[500px] h-[350px] rounded-full opacity-[0.10]"
           style={{
-            left:'45%', top:'42%',
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.04) 35%, transparent 60%)',
-            transform:'translate(-50%,-50%)',
-            animation: 'goldenDrift 8s ease-in-out infinite',
-          }}/>
-        <div className="absolute w-[400px] h-[400px] rounded-full opacity-[0.08]"
-          style={{
-            left:'52%', top:'55%',
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 55%)',
-            transform:'translate(-50%,-50%)',
-            animation: 'goldenDrift2 10s ease-in-out infinite',
-          }}/>
-        {/* 紫色星云 - 浮动 */}
-        <div className="absolute w-[500px] h-[400px] rounded-full opacity-[0.10]"
-          style={{
-            left:'25%', top:'30%',
+            left:'30%', top:'18%',
             background:'radial-gradient(ellipse, #7A4DFF 0%, transparent 55%)',
-            animation: 'nebulaFloat 12s ease-in-out infinite',
+            animation: 'nebulaA 14s ease-in-out infinite',
           }}/>
-        <div className="absolute w-[450px] h-[350px] rounded-full opacity-[0.08]"
+        <div className="absolute w-[400px] h-[300px] rounded-full opacity-[0.07]"
           style={{
-            left:'70%', top:'60%',
+            left:'65%', top:'22%',
             background:'radial-gradient(ellipse, #5B3A9B 0%, transparent 50%)',
-            animation: 'nebulaFloat2 14s ease-in-out infinite',
+            animation: 'nebulaB 12s ease-in-out infinite',
           }}/>
-        {/* 蓝色星云 */}
-        <div className="absolute w-[400px] h-[300px] rounded-full opacity-[0.10]"
+        {/* 金色光晕 - 浮动 */}
+        <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.10]"
           style={{
-            left:'60%', top:'25%',
-            background:'radial-gradient(ellipse, #2A5A9B 0%, transparent 50%)',
-            animation: 'nebulaFloat3 11s ease-in-out infinite',
+            left:'45%', top:'44%',
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 35%, transparent 55%)',
+            transform:'translate(-50%,-50%)',
+            animation: 'goldenA 9s ease-in-out infinite',
           }}/>
-        <div className="absolute w-[400px] h-[300px] rounded-full opacity-[0.08]"
+        <div className="absolute w-[350px] h-[350px] rounded-full opacity-[0.06]"
           style={{
-            left:'30%', top:'65%',
-            background:'radial-gradient(ellipse, #1A4A8C 0%, transparent 50%)',
-            animation: 'nebulaFloat4 13s ease-in-out infinite',
+            left:'52%', top:'52%',
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.02) 40%, transparent 50%)',
+            transform:'translate(-50%,-50%)',
+            animation: 'goldenB 11s ease-in-out infinite',
+          }}/>
+        {/* 底部蓝紫 */}
+        <div className="absolute w-[450px] h-[300px] rounded-full opacity-[0.08]"
+          style={{
+            left:'40%', top:'78%',
+            background:'radial-gradient(ellipse, #2A1A5A 0%, transparent 50%)',
+            animation: 'nebulaC 15s ease-in-out infinite',
           }}/>
       </div>
       <StarParticles />
-      {/* 动画关键帧 */}
       <style>{`
-        @keyframes goldenDrift {
-          0%,100% { left:45%; top:42%; opacity:0.12; }
-          50% { left:48%; top:45%; opacity:0.16; }
+        @keyframes nebulaA {
+          0%,100% { left:30%; top:18%; opacity:0.10; }
+          50% { left:33%; top:20%; opacity:0.14; }
         }
-        @keyframes goldenDrift2 {
-          0%,100% { left:52%; top:55%; opacity:0.08; }
-          50% { left:49%; top:52%; opacity:0.12; }
+        @keyframes nebulaB {
+          0%,100% { left:65%; top:22%; opacity:0.07; }
+          50% { left:62%; top:19%; opacity:0.11; }
         }
-        @keyframes nebulaFloat {
-          0%,100% { left:25%; top:30%; opacity:0.10; }
-          50% { left:28%; top:32%; opacity:0.14; }
+        @keyframes nebulaC {
+          0%,100% { left:40%; top:78%; opacity:0.08; }
+          50% { left:43%; top:75%; opacity:0.12; }
         }
-        @keyframes nebulaFloat2 {
-          0%,100% { left:70%; top:60%; opacity:0.08; }
-          50% { left:68%; top:57%; opacity:0.12; }
+        @keyframes goldenA {
+          0%,100% { left:45%; top:44%; opacity:0.10; }
+          50% { left:48%; top:46%; opacity:0.14; }
         }
-        @keyframes nebulaFloat3 {
-          0%,100% { left:60%; top:25%; opacity:0.10; }
-          50% { left:57%; top:28%; opacity:0.13; }
-        }
-        @keyframes nebulaFloat4 {
-          0%,100% { left:30%; top:65%; opacity:0.08; }
-          50% { left:33%; top:62%; opacity:0.12; }
+        @keyframes goldenB {
+          0%,100% { left:52%; top:52%; opacity:0.06; }
+          50% { left:49%; top:50%; opacity:0.10; }
         }
       `}</style>
     </>
