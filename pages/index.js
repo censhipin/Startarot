@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 /* ================================
    公有领域维特塔罗牌面
@@ -823,6 +823,8 @@ function ZodiacSection() {
   const [activeIdx, setActiveIdx] = useState(null)
   const [flipped, setFlipped] = useState({})
   const [cardWidth, setCardWidth] = useState(200)
+  const cardRefs = useRef({})
+  const [arcData, setArcData] = useState({})
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
 
@@ -836,7 +838,36 @@ function ZodiacSection() {
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // 慢速滚轮
+  // 实时弧形计算
+  const updateArc = useCallback(() => {
+    const container = scrollRef.current
+    if (!container) return
+    const cr = container.getBoundingClientRect()
+    const centerX = cr.left + cr.width / 2
+    const maxDist = cr.width * 0.7
+    const data = {}
+    Object.entries(cardRefs.current).forEach(([key, el]) => {
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const cardCenter = rect.left + rect.width / 2
+      const dist = Math.min(Math.abs(cardCenter - centerX) / maxDist, 2)
+      const yOffset = Math.pow(dist, 1.8) * 25
+      const scale = Math.max(0.55, 1 - dist * 0.3)
+      const brightness = Math.max(0.35, 1 - dist * 0.4)
+      data[key] = { yOffset, scale, brightness }
+    })
+    setArcData(data)
+  }, [])
+
+  useEffect(() => {
+    const container = scrollRef.current
+    if (!container) return
+    const handler = () => updateArc()
+    container.addEventListener('scroll', handler, { passive: true })
+    updateArc()
+    return () => container.removeEventListener('scroll', handler)
+  }, [cardWidth, updateArc])
+
   useEffect(() => {
     if (paused) return
     const el = scrollRef.current
@@ -850,54 +881,31 @@ function ZodiacSection() {
 
   const items = [...ZODIACS, ...ZODIACS]
 
-  // 弧形偏移计算：中心=0，两侧渐低
-  const getArcOffset = (index, total) => {
-    const center = total / 2
-    const dist = Math.abs(index - center) / center
-    // dist: 0=中心, 1=边缘
-    const yOffset = Math.pow(dist, 1.5) * 22
-    const scale = 1 - dist * 0.25
-    return { yOffset, scale }
-  }
-
   return (
     <section id="zodiac" className="relative z-10 py-28 overflow-hidden">
       {/* 占星法阵背景 */}
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-        {/* 星盘圆环 */}
-        <div className="absolute w-[800px] h-[800px] rounded-full opacity-[0.04]"
-          style={{ border:'1px solid #D4AF37', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
-        <div className="absolute w-[650px] h-[650px] rounded-full opacity-[0.03]"
-          style={{ border:'1px solid #D4AF37', borderStyle:'dashed', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
-        <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.04]"
-          style={{ border:'1px solid #D4AF37', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
-        {/* 刻度装饰 */}
-        <div className="absolute w-[720px] h-[720px] rounded-full opacity-[0.02]"
-          style={{
-            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
-            background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)',
-          }}/>
-        {/* 星轨射线 */}
-        <div className="absolute w-[900px] h-[900px] opacity-[0.015]"
-          style={{
-            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
-            background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.5%, transparent 41%)',
-          }}/>
-        {/* 十二宫符号环绕 */}
-        <div className="absolute w-[580px] h-[580px] opacity-[0.06]"
-          style={{
-            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
-            fontSize:14, letterSpacing:0,
-            fontFamily:'Georgia,serif', color:'#D4AF37',
-          }}>
+        <div className="relative w-full max-w-[900px] aspect-square opacity-[0.05]"
+          style={{ transform:'translateY(-10%)' }}>
+          <div className="absolute inset-[3%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
+          <div className="absolute inset-[13%] rounded-full"
+            style={{ border:'1px solid #D4AF37', borderStyle:'dashed' }}/>
+          <div className="absolute inset-[23%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
+          <div className="absolute inset-[8%] rounded-full opacity-[0.5]"
+            style={{ background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)' }}/>
+          <div className="absolute inset-[2%]"
+            style={{ background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.2%, transparent 40.5%)' }}/>
           {ZODIACS.map((z, i) => {
             const angle = (i / 12) * 360 - 90
+            const r = 38
+            const rad = (angle * Math.PI) / 180
             return (
-              <span key={i} className="absolute"
+              <span key={i} className="absolute text-xs"
                 style={{
-                  left:'50%', top:'50%',
-                  transform:`rotate(${angle}deg) translateY(-290px) rotate(-${angle}deg)`,
-                  transformOrigin:'center center',
+                  left:`${50 + r * Math.cos(rad)}%`,
+                  top:`${50 + r * Math.sin(rad)}%`,
+                  transform:'translate(-50%,-50%)',
+                  color:'#D4AF37', opacity:0.4,
                 }}>
                 {z.sym}
               </span>
@@ -920,35 +928,37 @@ function ZodiacSection() {
         <div ref={scrollRef}
           className="overflow-x-auto"
           style={{ scrollbarWidth:'none', msOverflowStyle:'none', cursor:'grab' }}>
-          <div className="inline-flex gap-4 py-6 px-8 items-start"
+          <div className="inline-flex gap-4 py-8 px-8 items-start"
             style={{ minHeight: cardWidth * 1.5 }}>
             {items.map((z, i) => {
               const isActive = activeIdx === i
               const flipKey = `zodiac-${i}`
               const isFlipped = flipped[flipKey] || false
-              const { yOffset, scale } = getArcOffset(i, items.length)
-              const cardW = cardWidth * scale
-              const baseW = 200
-              const baseScale = cardWidth / baseW
+              const ad = arcData[i] || { yOffset:0, scale:1, brightness:1 }
+              const cardW = cardWidth * ad.scale
+
               return (
                 <div key={i}
-                  className={`shrink-0 rounded-xl overflow-hidden transition-all duration-500 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
+                  ref={el => cardRefs.current[i] = el}
+                  className={`shrink-0 rounded-xl overflow-hidden transition-opacity duration-300 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
                   style={{
                     width: cardW,
                     aspectRatio: '5/7',
                     perspective: '1200px',
-                    marginTop: `${yOffset}px`,
-                    zIndex: Math.round(scale * 100),
+                    marginTop: `${ad.yOffset}px`,
+                    zIndex: Math.round(ad.scale * 100),
+                    opacity: ad.brightness,
+                    filter: ad.scale < 0.7 ? 'blur(0.3px)' : 'none',
                   }}
                   onMouseEnter={() => setActiveIdx(i)}
                   onMouseLeave={() => setActiveIdx(null)}
                   onClick={() => { if (z.img) toggleFlip(flipKey) }}>
                   {/* 底部金色光晕 */}
-                  <div className="absolute -bottom-4 left-0 right-0 h-8 rounded-full pointer-events-none z-0"
+                  <div className="absolute -bottom-5 left-0 right-0 h-10 rounded-full pointer-events-none z-0"
                     style={{
-                      background:'radial-gradient(ellipse, rgba(212,175,55,0.15) 0%, transparent 60%)',
-                      opacity: isActive ? 0.25 : 0.08,
-                      transform:`scale(${1 + (1 - scale) * 0.5})`,
+                      background:'radial-gradient(ellipse, rgba(212,175,55,0.2) 0%, transparent 60%)',
+                      opacity: isActive ? 0.35 : 0.12,
+                      transform:`scale(${1 + (1 - ad.scale) * 0.5})`,
                       transition:'opacity 0.4s',
                     }}/>
                   <div className="relative w-full h-full transition-all duration-700"
@@ -961,7 +971,7 @@ function ZodiacSection() {
                       style={{
                         backfaceVisibility: 'hidden',
                         border: isActive ? `1.5px solid ${z.color}` : '1px solid rgba(212,175,55,0.06)',
-                        transform: isActive ? 'translateY(-8px) scale(1.02)' : 'none',
+                        transform: isActive ? 'translateY(-6px) scale(1.02)' : 'none',
                         boxShadow: isActive
                           ? `0 0 25px rgba(212,175,55,0.15), 0 0 50px rgba(212,175,55,0.06)`
                           : '0 4px 12px rgba(0,0,0,0.3)',
@@ -971,7 +981,6 @@ function ZodiacSection() {
                         <>
                           <img src={z.img} alt={z.name}
                             style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
-                          {/* 悬停遮罩 */}
                           <div className="absolute inset-0 transition-opacity duration-300"
                             style={{
                               background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 40%, transparent 60%)',
@@ -983,7 +992,6 @@ function ZodiacSection() {
                               <p className="text-[10px] mt-1 leading-relaxed" style={{ color:'#8B7D9B' }}>{z.desc}</p>
                             </div>
                           </div>
-                          {/* 卡片底部 */}
                           <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center"
                             style={{
                               background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
@@ -991,6 +999,7 @@ function ZodiacSection() {
                               transition:'opacity 0.3s',
                             }}>
                             <p className="text-xs f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
+                            <p className="text-[8px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{z.en}</p>
                           </div>
                         </>
                       ) : (
