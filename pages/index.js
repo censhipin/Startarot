@@ -89,6 +89,7 @@ export default function Home() {
         <NavBar />
         <HeroSection />
         <PopularSection />
+        <TrendingSection />
         <TarotIntro />
         <GallerySection />
         <FeaturesSection />
@@ -508,6 +509,84 @@ function PopularSection() {
               </a>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ================================ 大家都在测 ================================ */
+function TrendingSection() {
+  const questions = [
+    { q:'他还喜欢我吗？', icon:'💕', color:'#F472B6' },
+    { q:'我们还有复合机会吗？', icon:'💫', color:'#A78BFA' },
+    { q:'我的正缘什么时候出现？', icon:'❤️', color:'#FB7185' },
+    { q:'最近财运会变好吗？', icon:'💰', color:'#FBBF24' },
+    { q:'我该换工作吗？', icon:'💼', color:'#60A5FA' },
+    { q:'未来三个月运势如何？', icon:'⭐', color:'#34D399' },
+    { q:'今年能脱单吗？', icon:'🌈', color:'#F472B6' },
+    { q:'TA是否在想我？', icon:'🔮', color:'#A78BFA' },
+    { q:'我的事业会有突破吗？', icon:'🚀', color:'#60A5FA' },
+    { q:'最近适合投资吗？', icon:'📈', color:'#FBBF24' },
+  ]
+
+  const scrollRef = useRef(null)
+  const [paused, setPaused] = useState(false)
+
+  useEffect(() => {
+    if (paused) return
+    const el = scrollRef.current
+    if (!el) return
+    const interval = setInterval(() => {
+      el.scrollLeft += 0.6
+      if (el.scrollLeft >= (el.scrollWidth - el.clientWidth)) el.scrollLeft = 0
+    }, 30)
+    return () => clearInterval(interval)
+  }, [paused])
+
+  return (
+    <section className="relative z-10 py-20"
+      style={{
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
+      }}>
+      <div className="max-w-[1100px] mx-auto px-6">
+        <div className="text-center mb-12">
+          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>TRENDING</p>
+          <h2 className="text-3xl font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>大家都在测什么？</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>探索最受欢迎的塔罗问题</p>
+        </div>
+      </div>
+
+      <div className="relative max-w-[1100px] mx-auto px-6"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}>
+        <div ref={scrollRef}
+          className="overflow-x-auto"
+          style={{ scrollbarWidth:'none', msOverflowStyle:'none', cursor:'grab' }}>
+          <div className="inline-flex gap-4 py-2">
+            {[...questions, ...questions].map((item, i) => (
+              <div key={i}
+                className="shrink-0 w-[200px] p-5 rounded-xl transition-all duration-400 cursor-pointer hover:-translate-y-1 group"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(212,175,55,0.06)',
+                }}>
+                <div className="text-2xl mb-3">{item.icon}</div>
+                <p className="text-sm leading-relaxed mb-4" style={{ color:'#B8A9C9' }}>「{item.q}」</p>
+                <a href="#cta"
+                  className="inline-block w-full text-center py-2 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                  style={{
+                    background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
+                    color: '#07060a',
+                    opacity: 0.9,
+                  }}>
+                  立即测算 →
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
