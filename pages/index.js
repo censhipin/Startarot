@@ -116,20 +116,6 @@ function GlobalStyles() {
       ::-webkit-scrollbar-track { background:#05050C; }
       ::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.2); border-radius:3px; }
 
-      /* ===== 3D旋转卡牌 ===== */
-      .scene3d { perspective: 1000px; }
-      .carousel3d {
-        position: absolute; inset: 0;
-        display: flex; align-items: center; justify-content: center;
-        transform-style: preserve-3d;
-        will-change: transform;
-      }
-      .card3d {
-        position: absolute;
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
-      }
-
       .flip-card { perspective:1200px; }
       .flip-inner {
         position:relative; width:100%; height:100%;
@@ -146,107 +132,6 @@ function GlobalStyles() {
         background:linear-gradient(145deg,#140627,#0A0A1E);
         border:1px solid rgba(212,175,55,0.12);
         display:flex; flex-direction:column; justify-content:center; padding:12px;
-      }
-
-      /* ---- 金色辉光动画 ---- */
-      @keyframes goldenPulse {
-        0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.1), 0 0 40px rgba(212,175,55,0.05); }
-        50% { box-shadow: 0 0 30px rgba(212,175,55,0.2), 0 0 60px rgba(212,175,55,0.1); }
-      }
-
-      @keyframes goldenFlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-
-      @keyframes goldenGlowRotate {
-        0% { filter: hue-rotate(0deg) brightness(1); }
-        50% { filter: hue-rotate(5deg) brightness(1.1); }
-        100% { filter: hue-rotate(0deg) brightness(1); }
-      }
-
-      /* ---- 星空纹理 ---- */
-      .star-texture {
-        background-image:
-          radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.08), transparent),
-          radial-gradient(1px 1px at 25% 50%, rgba(255,255,255,0.06), transparent),
-          radial-gradient(1.5px 1.5px at 40% 10%, rgba(212,175,55,0.08), transparent),
-          radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.05), transparent),
-          radial-gradient(1px 1px at 70% 30%, rgba(212,175,55,0.06), transparent),
-          radial-gradient(1.5px 1.5px at 85% 80%, rgba(255,255,255,0.07), transparent),
-          radial-gradient(1px 1px at 15% 85%, rgba(110,200,255,0.06), transparent),
-          radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,0.05), transparent),
-          radial-gradient(1.2px 1.2px at 90% 15%, rgba(212,175,55,0.07), transparent),
-          radial-gradient(1px 1px at 35% 90%, rgba(110,200,255,0.05), transparent);
-      }
-
-      /* ---- 金色边框工具类 ---- */
-      .golden-border {
-        border: 1px solid rgba(212,175,55,0.12);
-      }
-      .golden-border-thick {
-        border: 1.5px solid rgba(212,175,55,0.15);
-      }
-
-      /* ---- 悬停发光效果 ---- */
-      .hover-glow {
-        transition: all 0.4s ease;
-      }
-      .hover-glow:hover {
-        border-color: rgba(212,175,55,0.25) !important;
-        box-shadow: 0 0 20px rgba(212,175,55,0.1), 0 0 40px rgba(212,175,55,0.05);
-        transform: translateY(-4px);
-      }
-
-      /* ---- 特性卡片 hover ---- */
-      .feature-card {
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
-      }
-      .feature-card::before {
-        content: '';
-        position: absolute;
-        inset: -1px;
-        border-radius: 16px;
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        border: 1.5px solid rgba(212,175,55,0.3);
-        box-shadow: 0 0 25px rgba(212,175,55,0.12), 0 0 50px rgba(212,175,55,0.06);
-        pointer-events: none;
-      }
-      .feature-card:hover::before {
-        opacity: 1;
-      }
-      .feature-card:hover {
-        transform: translateY(-6px);
-      }
-
-      /* ---- 星座卡牌 hover ---- */
-      .zodiac-card {
-        perspective: 800px;
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-      }
-      .zodiac-card:hover {
-        transform: perspective(800px) translateY(-12px) scale(1.04) rotateX(3deg) rotateY(-2deg);
-        box-shadow: 0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1);
-      }
-
-      /* ---- 占位星座卡 hover ---- */
-      .zodiac-placeholder:hover {
-        border-color: rgba(212,175,55,0.2) !important;
-        box-shadow: 0 0 20px rgba(212,175,55,0.08), 0 0 40px rgba(212,175,55,0.04);
-      }
-
-      /* ---- 次要按钮 hover ---- */
-      .secondary-btn {
-        transition: all 0.3s ease;
-      }
-      .secondary-btn:hover {
-        border-color: #D4AF37 !important;
-        box-shadow: 0 0 20px rgba(212,175,55,0.15);
-        transform: translateY(-2px);
       }
     `}</style>
   )
@@ -274,14 +159,12 @@ function CosmicBackground() {
           style={{ background:'radial-gradient(ellipse, #6B3FA0 0%, transparent 60%)' }}/>
         <div className="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full opacity-[0.08]"
           style={{ background:'radial-gradient(circle, #7A4DFF 0%, transparent 60%)' }}/>
-
         {/* 中部：深蓝星云 */}
         <div className="absolute top-[30%] left-[15%] w-[600px] h-[450px] rounded-full opacity-[0.10]"
           style={{ background:'radial-gradient(ellipse, #1A3A6B 0%, transparent 55%)' }}/>
         <div className="absolute top-[40%] right-[5%] w-[550px] h-[450px] rounded-full opacity-[0.08]"
           style={{ background:'radial-gradient(ellipse, #0F2A5C 0%, transparent 55%)' }}/>
-
-        {/* 中部：金色光晕（页面中央区域） */}
+        {/* 中部：金色光晕 */}
         <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full opacity-[0.07]"
           style={{
             background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 65%)',
@@ -292,8 +175,7 @@ function CosmicBackground() {
             background:'radial-gradient(circle, #D4AF37 0%, transparent 50%)',
             transform:'translate(-50%,-50%)',
           }}/>
-
-        {/* 底部：深蓝紫渐变 */}
+        {/* 底部：深蓝紫 */}
         <div className="absolute bottom-[5%] left-[20%] w-[500px] h-[400px] rounded-full opacity-[0.07]"
           style={{ background:'radial-gradient(ellipse, #1A0A3A 0%, transparent 55%)' }}/>
         <div className="absolute bottom-[0%] right-[20%] w-[450px] h-[350px] rounded-full opacity-[0.06]"
@@ -313,7 +195,7 @@ function StarParticles() {
           if (!el || el.dataset.done) return
           el.dataset.done = '1'
           const ctx = el.getContext('2d')
-          let w, h, stars = []
+          let w, h, stars = [], meteors = [], frame = 0
           const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
           resize()
           window.addEventListener('resize', resize)
@@ -321,8 +203,7 @@ function StarParticles() {
             const isBright = Math.random() > 0.8
             const isGold = Math.random() > 0.75
             stars.push({
-              x: Math.random() * w,
-              y: Math.random() * h,
+              x: Math.random() * w, y: Math.random() * h,
               r: isBright ? Math.random() * 2 + 1.5 : Math.random() * 1.5 + 0.3,
               a: isBright ? Math.random() * 0.8 + 0.4 : Math.random() * 0.5 + 0.15,
               speed: Math.random() * 0.2 + 0.03,
@@ -335,6 +216,7 @@ function StarParticles() {
           function draw() {
             ctx.clearRect(0, 0, w, h)
             const t = Date.now() / 1000
+            frame++
             stars.forEach(s => {
               let alpha = s.a
               if (s.twinkle) {
@@ -349,6 +231,26 @@ function StarParticles() {
               }
               ctx.fill()
             })
+            // 流星
+            if (frame % 150 === 0 && Math.random() > 0.5) {
+              meteors.push({
+                x: Math.random() * w * 0.6, y: Math.random() * h * 0.3,
+                len: Math.random() * 100 + 50, speed: Math.random() * 14 + 10, life: 1,
+              })
+            }
+            for (let i = meteors.length - 1; i >= 0; i--) {
+              const m = meteors[i]
+              m.x += m.speed * 1.2; m.y += m.speed * 0.3; m.life -= 0.02
+              if (m.life <= 0) { meteors.splice(i, 1); continue }
+              const tail = m.life * m.len
+              ctx.beginPath()
+              ctx.moveTo(m.x, m.y)
+              ctx.lineTo(m.x - tail, m.y - tail * 0.3)
+              const grad = ctx.createLinearGradient(m.x, m.y, m.x - tail, m.y - tail * 0.3)
+              grad.addColorStop(0, `rgba(255, 240, 210, ${m.life * 0.7})`)
+              grad.addColorStop(1, 'rgba(255, 240, 210, 0)')
+              ctx.strokeStyle = grad; ctx.lineWidth = 1.8; ctx.stroke()
+            }
             id = requestAnimationFrame(draw)
           }
           draw()
@@ -462,13 +364,6 @@ function HeroSection() {
 
   return (
     <section className="relative z-10 min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
-      <div className="fixed pointer-events-none" style={{
-        left:'65%', top:'50%', width:400, height:400,
-        transform:'translate(-50%,-50%)',
-        background:'radial-gradient(circle, rgba(212,175,55,0.04) 0%, transparent 60%)',
-        zIndex:0,
-      }}/>
-
       <div className="max-w-[1200px] mx-auto px-6 w-full">
         <div className="flex items-center gap-8 max-lg:flex-col max-lg:text-center">
 
@@ -578,20 +473,14 @@ function TarotIntro() {
     { name:'星币', en:'Pentacles', el:'土 · 物质与工作', src:SUIT_EXAMPLES.pentacles },
   ]
   return (
-    <section id="tarot" className="relative z-10 py-24 star-texture"
+    <section id="tarot" className="relative z-10 py-24"
       style={{
-        background: 'linear-gradient(180deg, rgba(20,6,39,0.95) 0%, rgba(10,10,30,0.98) 50%, rgba(5,5,12,0.95) 100%), radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.08), transparent)',
-        borderTop: '1px solid rgba(212,175,55,0.08)',
-        borderBottom: '1px solid rgba(212,175,55,0.08)',
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
       }}>
       <div className="max-w-[1100px] mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
-          <div
-            className="p-6 rounded-2xl golden-border-thick"
-            style={{
-              background: 'rgba(212,175,55,0.02)',
-              boxShadow: '0 0 30px rgba(212,175,55,0.03)',
-            }}>
+          <div>
             <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>ABOUT TAROT</p>
             <h2 className="text-3xl font-bold mb-4 f-serif" style={{ color:'#FFF8E7' }}>什么是塔罗？</h2>
             <div className="space-y-4 text-sm leading-relaxed" style={{ color:'#A99BB8' }}>
@@ -603,7 +492,7 @@ function TarotIntro() {
             <p className="text-xs tracking-[5px] mb-4" style={{ color:'#D4AF37' }}>DECK STRUCTURE</p>
             <div className="flex gap-6 mb-6">
               {[['22','大阿卡纳','Major Arcana'],['56','小阿卡纳','Minor Arcana'],['78','总计','Total']].map(([n,t,s]) => (
-                <div key={t} className="flex-1 p-5 rounded-xl text-center hover-glow"
+                <div key={t} className="flex-1 p-5 rounded-xl text-center"
                   style={{ background:'rgba(212,175,55,0.03)', border:'1px solid rgba(212,175,55,0.06)' }}>
                   <div className="text-3xl font-bold f-serif mb-1" style={{ color:'#D4AF37' }}>{n}</div>
                   <div className="text-xs" style={{ color:'#7A6D8A' }}>{t}<br/>{s}</div>
@@ -613,7 +502,7 @@ function TarotIntro() {
             <p className="text-xs mb-3 tracking-[2px]" style={{ color:'#D4AF37' }}>小阿卡纳 · 四牌组</p>
             <div className="grid grid-cols-4 gap-3">
               {suits.map(s => (
-                <div key={s.name} className="text-center p-3 rounded-lg transition-all duration-300 hover:-translate-y-2 hover-glow"
+                <div key={s.name} className="text-center p-3 rounded-lg transition-all duration-300 hover:-translate-y-1"
                   style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
                   <div className="mb-1 rounded overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.08)' }}>
                     <img src={s.src} alt={s.name} style={{ width:'100%', aspectRatio:'5/7', objectFit:'cover' }}/>
@@ -678,11 +567,10 @@ function GallerySection() {
 /* ================================ 核心功能 ================================ */
 function FeaturesSection() {
   return (
-    <section id="features" className="relative z-10 py-24 star-texture"
+    <section id="features" className="relative z-10 py-24"
       style={{
-        background: 'linear-gradient(180deg, rgba(20,6,39,0.9) 0%, rgba(10,10,30,0.95) 50%, rgba(5,5,12,0.9) 100%)',
-        borderTop: '1px solid rgba(212,175,55,0.08)',
-        borderBottom: '1px solid rgba(212,175,55,0.08)',
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
       }}>
       <div className="max-w-[1100px] mx-auto px-6">
         <div className="text-center mb-14">
@@ -696,24 +584,19 @@ function FeaturesSection() {
               desc:'每天一张今日指引牌，翻牌动画、正逆位深度解读、生活建议。每天30秒，养成与自己对话的习惯。',
               img:CARDS.fool, label:'每日抽牌 · 愚人', sub:'正位 · 新的开始' },
             { tag:'SPREADS', title:'多牌阵占卜',
-              desc:'三牌阵、凯尔特十字、感情/事业/财运/学业——覆盖生活各个领域。自定义牌阵也支持。',
-              extra:'三牌阵 · 凯尔特十字 · 感情 · 事业 · 财运 · 学业' },
+              desc:'三牌阵、凯尔特十字、感情/事业/财运/学业——覆盖生活各个领域。自定义牌阵也支持。' },
             { tag:'LIBRARY', title:'78张牌完整牌库',
               desc:'大阿卡纳 + 小阿卡纳四牌组，每张牌都有正/逆位含义、牌面象征解读、关键词标签。支持搜索和收藏。',
               imgs:[CARDS.priestess, CARDS.justice, CARDS.tower, CARDS.sun, CARDS.world] },
             { tag:'ZODIAC', title:'星座运势',
-              desc:'每日/每周/每月运势、星座配对分析。每个星座结合塔罗牌解读，给你不一样的运势体验。',
+              desc:'每日/每周/每月运势、星座配对分析。每个星座结合塔罗牌解读，给你不一样的运势体验।',
               zodiac: true },
           ].map((f, i) => (
-            <div key={i} className="feature-card p-6 rounded-2xl transition-all duration-300 group"
-              style={{
-                background:'rgba(212,175,55,0.02)',
-                border:'1px solid rgba(212,175,55,0.04)',
-              }}>
+            <div key={i} className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
+              style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
               <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>{f.tag}</p>
               <h3 className="text-lg font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>{f.title}</h3>
               <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>{f.desc}</p>
-
               {f.img && <div className="flex gap-4 items-start">
                 <div className="w-[80px] shrink-0 rounded-lg overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.1)' }}>
                   <img src={f.img} alt="" style={{ width:'100%', aspectRatio:'5/7', objectFit:'cover' }}/>
@@ -723,9 +606,6 @@ function FeaturesSection() {
                   <p className="text-xs mt-1" style={{ color:'#D4AF37' }}>{f.sub}</p>
                 </div>
               </div>}
-
-              {f.extra && <p className="text-xs" style={{ color:'#7A6D8A' }}>{f.extra}</p>}
-
               {f.imgs && <div className="flex gap-2">
                 {f.imgs.map((src, j) => (
                   <div key={j} className="flex-1 rounded overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.06)' }}>
@@ -733,7 +613,6 @@ function FeaturesSection() {
                   </div>
                 ))}
               </div>}
-
               {f.zodiac && <div className="flex items-center justify-center gap-2 p-3 rounded-xl flex-wrap"
                 style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
                 {ZODIACS.map(z => (
@@ -758,7 +637,6 @@ function ZodiacSection() {
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
 
-  // 响应式卡牌宽度
   useEffect(() => {
     function updateWidth() {
       if (window.innerWidth < 768) setCardWidth(Math.min(window.innerWidth * 0.75, 280))
@@ -769,7 +647,6 @@ function ZodiacSection() {
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // 自动轮播（加速）
   useEffect(() => {
     if (paused) return
     const el = scrollRef.current
@@ -814,36 +691,23 @@ function ZodiacSection() {
                   onMouseEnter={() => setActiveIdx(i)}
                   onMouseLeave={() => setActiveIdx(null)}
                   onClick={() => { if (z.img) toggleFlip(flipKey) }}>
-
-                  {/* 翻转容器 */}
                   <div className="relative w-full h-full transition-all duration-700"
                     style={{
                       transformStyle: 'preserve-3d',
                       transform: isFlipped ? 'rotateY(180deg)' : 'none',
                     }}>
-
-                    {/* 正面：卡牌图片 */}
                     <div className="absolute inset-0 rounded-xl overflow-hidden"
                       style={{
                         backfaceVisibility: 'hidden',
-                        border: isActive
-                          ? `2px solid ${z.color}`
-                          : z.img
-                            ? '1px solid rgba(212,175,55,0.05)'
-                            : '1px solid rgba(255,255,255,0.06)',
-                        transform: isActive
-                          ? `perspective(800px) translateY(-12px) scale(1.04) rotateX(3deg) rotateY(-2deg)`
-                          : 'none',
-                        boxShadow: isActive
-                          ? `0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1)`
-                          : '0 4px 16px rgba(0,0,0,0.3)',
+                        border: isActive ? `2px solid ${z.color}` : z.img ? '1px solid rgba(212,175,55,0.05)' : '1px solid rgba(255,255,255,0.06)',
+                        transform: isActive ? `perspective(800px) translateY(-12px) scale(1.04)` : 'none',
+                        boxShadow: isActive ? `0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1)` : '0 4px 16px rgba(0,0,0,0.3)',
                         transition: 'all 0.4s',
                       }}>
                       {z.img ? (
                         <>
                           <img src={z.img} alt={z.name}
                             style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
-                          {/* 悬停时显示日期/元素信息（不显示名称，卡牌图上已有） */}
                           <div className="absolute inset-0 transition-opacity duration-300"
                             style={{
                               background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)',
@@ -877,8 +741,6 @@ function ZodiacSection() {
                         </div>
                       )}
                     </div>
-
-                    {/* 背面：星座信息与祝福 */}
                     <div className="absolute inset-0 rounded-xl overflow-hidden p-5 flex flex-col justify-center text-center"
                       style={{
                         backfaceVisibility: 'hidden',
@@ -930,18 +792,15 @@ function CTASection() {
           <a href="#"
             className="inline-block py-4 px-12 rounded-xl text-base font-medium no-underline tracking-[3px] transition-all duration-300 hover:-translate-y-1"
             style={{
-              background: 'linear-gradient(135deg, #8B6914, #D4AF37, #FFF8E7, #D4AF37, #8B6914)',
-              backgroundSize: '200% 200%',
+              background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
               color: '#07060a',
               boxShadow: '0 8px 30px rgba(212,175,55,0.15), 0 0 60px rgba(212,175,55,0.05)',
-              animation: 'ctaPulse 3s ease-in-out infinite, goldenFlow 4s ease-in-out infinite',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 50px rgba(212,175,55,0.35), 0 0 80px rgba(212,175,55,0.15)' }}
-            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 8px 30px rgba(212,175,55,0.15), 0 0 60px rgba(212,175,55,0.05)' }}>
+              animation: 'ctaPulse 3s ease-in-out infinite',
+            }}>
             进入星塔占卜
           </a>
           <a href="#gallery"
-            className="secondary-btn inline-block py-4 px-12 rounded-xl text-base no-underline tracking-[3px] transition-all duration-300"
+            className="inline-block py-4 px-12 rounded-xl text-base no-underline tracking-[3px] transition-all duration-300"
             style={{ border:'1px solid rgba(212,175,55,0.15)', color:'#D4AF37' }}>
             浏览78张塔罗牌
           </a>
