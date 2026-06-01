@@ -88,14 +88,14 @@ export default function Home() {
       <div className="content">
         <NavBar />
         <HeroSection />
+        <FeaturesSection />
         <PopularSection />
         <TrendingSection />
         <ExampleSection />
         <SpreadSection />
-        <TarotIntro />
         <GallerySection />
-        <FeaturesSection />
         <ZodiacSection />
+        <TarotIntro />
         <CTASection />
         <FooterSection />
       </div>
