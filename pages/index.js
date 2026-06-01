@@ -1205,7 +1205,7 @@ function ZodiacSection() {
   const items = [...ZODIACS, ...ZODIACS]
 
   return (
-    <section id="zodiac" className="relative z-10 py-28 overflow-hidden">
+    <section id="zodiac" className="relative z-10 py-28 pt-40 overflow-visible">
       {/* 占星法阵背景 */}
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
         <div className="relative w-full max-w-[900px] aspect-square"
@@ -1497,6 +1497,10 @@ function CTASection() {
         @keyframes goldenPulse {
           0%,100% { opacity:0.08; }
           50% { opacity:0.14; }
+        }
+        @keyframes slowSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </section>
