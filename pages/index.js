@@ -88,6 +88,7 @@ export default function Home() {
       <div className="content">
         <NavBar />
         <HeroSection />
+        <PopularSection />
         <TarotIntro />
         <GallerySection />
         <FeaturesSection />
@@ -447,6 +448,66 @@ function HeroSection() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ================================ 热门测算 ================================ */
+function PopularSection() {
+  const cards = [
+    { icon:'❤️', title:'爱情测算', questions:['他对我是什么感觉？','我们能复合吗？','我的正缘什么时候出现？'], color:'#F472B6' },
+    { icon:'💼', title:'事业测算', questions:['我该跳槽吗？','创业时机是否成熟？','如何提升职场运势？'], color:'#60A5FA' },
+    { icon:'💰', title:'财富测算', questions:['我的财运走向如何？','近期有投资机会吗？','如何提升收入？'], color:'#FBBF24' },
+    { icon:'⭐', title:'综合运势', questions:['本周运势如何？','我的幸运方向在哪？','近期需要注意什么？'], color:'#A78BFA' },
+    { icon:'💕', title:'关系匹配', questions:['我们是否合适？','如何改善关系？','对方在想什么？'], color:'#F472B6' },
+    { icon:'🔮', title:'人生指引', questions:['我的人生方向是什么？','如何做出重要选择？','当下最需要什么？'], color:'#60A5FA' },
+  ]
+
+  return (
+    <section className="relative z-10 py-20"
+      style={{
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
+      }}>
+      <div className="max-w-[1100px] mx-auto px-6">
+        <div className="text-center mb-12">
+          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>HOT READINGS</p>
+          <h2 className="text-3xl font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>你想获得什么答案？</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>爱情 · 事业 · 财富 · 未来方向</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {cards.map((card, i) => (
+            <div key={i}
+              className="p-5 rounded-xl transition-all duration-400 group cursor-pointer hover:-translate-y-1"
+              style={{
+                background: 'rgba(212,175,55,0.02)',
+                border: '1px solid rgba(212,175,55,0.06)',
+              }}>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl">{card.icon}</span>
+                <h3 className="text-base f-serif font-bold" style={{ color:'#FFF8E7' }}>{card.title}</h3>
+              </div>
+              <ul className="space-y-1.5 mb-4">
+                {card.questions.map((q, j) => (
+                  <li key={j} className="text-xs flex items-start gap-2" style={{ color:'#7A6D8A' }}>
+                    <span style={{ color: card.color }}>✦</span>
+                    <span>{q}</span>
+                  </li>
+                ))}
+              </ul>
+              <a href="#cta"
+                className="inline-block w-full text-center py-2 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
+                  color: '#07060a',
+                }}>
+                立即测算 →
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </section>
