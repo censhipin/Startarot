@@ -145,41 +145,41 @@ function CosmicBackground() {
         style={{
           background: `
             linear-gradient(180deg,
-              #12052B 0%,
-              #0B0420 18%,
-              #080D24 38%,
-              #050B1A 58%,
-              #0A0820 78%,
-              #050B1A 100%
+              #1E0A3E 0%,
+              #180E38 18%,
+              #0F1A3A 38%,
+              #0E1A30 58%,
+              #12102E 78%,
+              #0A0820 100%
             )
           `
         }}>
-        {/* 顶部：深紫星云 */}
-        <div className="absolute top-[-10%] left-[5%] w-[700px] h-[600px] rounded-full opacity-[0.12]"
-          style={{ background:'radial-gradient(ellipse, #6B3FA0 0%, transparent 60%)' }}/>
-        <div className="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full opacity-[0.08]"
-          style={{ background:'radial-gradient(circle, #7A4DFF 0%, transparent 60%)' }}/>
-        {/* 中部：深蓝星云 */}
-        <div className="absolute top-[30%] left-[15%] w-[600px] h-[450px] rounded-full opacity-[0.10]"
-          style={{ background:'radial-gradient(ellipse, #1A3A6B 0%, transparent 55%)' }}/>
-        <div className="absolute top-[40%] right-[5%] w-[550px] h-[450px] rounded-full opacity-[0.08]"
-          style={{ background:'radial-gradient(ellipse, #0F2A5C 0%, transparent 55%)' }}/>
-        {/* 中部：金色光晕 */}
-        <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full opacity-[0.07]"
+        {/* 顶部：深紫星云（提亮+加透明度） */}
+        <div className="absolute top-[-10%] left-[5%] w-[700px] h-[600px] rounded-full opacity-[0.20]"
+          style={{ background:'radial-gradient(ellipse, #7A4DFF 0%, transparent 55%)' }}/>
+        <div className="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full opacity-[0.15]"
+          style={{ background:'radial-gradient(circle, #9B6DFF 0%, transparent 55%)' }}/>
+        {/* 中部：深蓝星云（提亮） */}
+        <div className="absolute top-[30%] left-[15%] w-[600px] h-[450px] rounded-full opacity-[0.18]"
+          style={{ background:'radial-gradient(ellipse, #2A5A9B 0%, transparent 50%)' }}/>
+        <div className="absolute top-[40%] right-[5%] w-[550px] h-[450px] rounded-full opacity-[0.15]"
+          style={{ background:'radial-gradient(ellipse, #1A4A8C 0%, transparent 50%)' }}/>
+        {/* 中部：金色光晕（加亮） */}
+        <div className="absolute top-[45%] left-[50%] w-[600px] h-[600px] rounded-full opacity-[0.15]"
           style={{
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 65%)',
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.06) 35%, transparent 60%)',
             transform:'translate(-50%,-50%)',
           }}/>
-        <div className="absolute top-[50%] left-[50%] w-[300px] h-[300px] rounded-full opacity-[0.04]"
+        <div className="absolute top-[50%] left-[50%] w-[400px] h-[400px] rounded-full opacity-[0.10]"
           style={{
-            background:'radial-gradient(circle, #D4AF37 0%, transparent 50%)',
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.04) 40%, transparent 55%)',
             transform:'translate(-50%,-50%)',
           }}/>
         {/* 底部：深蓝紫 */}
-        <div className="absolute bottom-[5%] left-[20%] w-[500px] h-[400px] rounded-full opacity-[0.07]"
-          style={{ background:'radial-gradient(ellipse, #1A0A3A 0%, transparent 55%)' }}/>
-        <div className="absolute bottom-[0%] right-[20%] w-[450px] h-[350px] rounded-full opacity-[0.06]"
-          style={{ background:'radial-gradient(ellipse, #0A1A3A 0%, transparent 55%)' }}/>
+        <div className="absolute bottom-[5%] left-[20%] w-[500px] h-[400px] rounded-full opacity-[0.12]"
+          style={{ background:'radial-gradient(ellipse, #2A1A5A 0%, transparent 50%)' }}/>
+        <div className="absolute bottom-[0%] right-[20%] w-[450px] h-[350px] rounded-full opacity-[0.10]"
+          style={{ background:'radial-gradient(ellipse, #1A2A5A 0%, transparent 50%)' }}/>
       </div>
       <StarParticles />
     </>
