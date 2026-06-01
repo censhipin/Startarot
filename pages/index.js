@@ -91,7 +91,6 @@ export default function Home() {
         <TarotIntro />
         <GallerySection />
         <FeaturesSection />
-        <GuardianSection />
         <ZodiacSection />
         <CTASection />
         <FooterSection />
@@ -552,7 +551,7 @@ function HeroSection() {
           <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_260px]"
                onMouseEnter={() => setPaused(true)}
                onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none mx-auto" style={{ width:360, height:440, overflow:'visible' }}>
+            <div className="relative select-none mx-auto mt-8" style={{ width:360, height:440, overflow:'visible' }}>
               <div className="absolute pointer-events-none rounded-full"
                 style={{
                   left:'50%', top:'50%', width:300, height:240,
@@ -598,9 +597,6 @@ function HeroSection() {
               </p>
               <p className="text-xs mt-0.5" style={{ color:'#7A6D8A' }}>
                 {frontCard.mean}
-              </p>
-              <p className="text-[10px] tracking-[3px] mt-2" style={{ color:'#4A3D5B' }}>
-                {paused ? '✦ 已暂停' : '鼠标悬停以暂停'}
               </p>
             </div>
           </div>
@@ -789,71 +785,7 @@ function FeaturesSection() {
   )
 }
 
-/* ================================ 星塔守护者 ================================ */
-function GuardianSection() {
-  return (
-    <section className="relative z-10 py-24 overflow-hidden">
-      <div className="max-w-[1100px] mx-auto px-6">
-        <div className="text-center mb-14">
-          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>GUARDIAN</p>
-          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星塔守护者</h2>
-          <p className="text-sm max-w-xl mx-auto" style={{ color:'#8B7D9B' }}>
-            每一张塔罗牌、每一个星座，都有一位星塔守护者守护着它的能量与智慧
-          </p>
-        </div>
-        <div className="flex flex-col md:flex-row items-center gap-12 max-w-4xl mx-auto">
-          {/* 守护者形象 */}
-          <div className="relative shrink-0">
-            {/* 外层光晕 */}
-            <div className="absolute inset-0 rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 40%, transparent 70%)',
-                transform: 'scale(1.35)',
-              }} />
-            {/* 金色边框圆形头像 */}
-            <div
-              className="w-[200px] h-[200px] md:w-[260px] md:h-[260px] rounded-full overflow-hidden relative"
-              style={{
-                border: '2px solid rgba(212,175,55,0.3)',
-                boxShadow: '0 0 40px rgba(212,175,55,0.15), 0 0 80px rgba(212,175,55,0.05), 0 0 120px rgba(212,175,55,0.03)',
-                animation: 'goldenPulse 4s ease-in-out infinite',
-              }}>
-              <img src="/zodiac-aries.jpg" alt="星塔守护者"
-                style={{ width:'100%', height:'100%', objectFit:'cover' }} />
-            </div>
-            {/* 装饰性星芒 */}
-            <div className="absolute -top-3 -right-3 text-2xl" style={{ color:'#D4AF37', opacity:0.3 }}>✦</div>
-            <div className="absolute -bottom-2 -left-2 text-xl" style={{ color:'#6EC8FF', opacity:0.25 }}>✦</div>
-          </div>
-
-          {/* 品牌文案 */}
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-4 f-serif" style={{ color:'#FFF8E7' }}>
-              ✦ 星塔守护者 ✦
-            </h3>
-            <p className="text-sm leading-relaxed mb-4" style={{ color:'#A99BB8' }}>
-              在星塔之中，每一张塔罗牌、每一颗星辰都有一位守护者。
-              白羊座的守护者，以火焰般的勇气守护着「力量」牌的智慧，
-              指引着每一位到访者探寻内心深处的答案。
-            </p>
-            <p className="text-sm leading-relaxed" style={{ color:'#7A6D8A' }}>
-              星塔守护者是宇宙能量的化身，连接着星座与塔罗的神秘纽带。
-              当你凝视他们的形象，便能感受到那份来自星辰的指引与守护。
-            </p>
-            <div className="mt-6 flex gap-4 text-xs justify-center md:justify-start" style={{ color:'#7A6D8A' }}>
-              <span className="hover:text-[#D4AF37] transition-colors">✦ 塔罗</span>
-              <span className="hover:text-[#D4AF37] transition-colors">✦ 星座</span>
-              <span className="hover:text-[#D4AF37] transition-colors">✦ 宇宙</span>
-              <span className="hover:text-[#D4AF37] transition-colors">✦ 内心</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ================================ 十二星座守护者卡牌长廊 ================================ */
+/* ================================ 星座长廊 ================================ */
 function ZodiacSection() {
   const scrollRef = useRef(null)
   const [paused, setPaused] = useState(false)
@@ -893,8 +825,8 @@ function ZodiacSection() {
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="text-center mb-14">
           <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>ZODIAC GALLERY</p>
-          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星座守护者卡牌长廊</h2>
-          <p className="text-sm" style={{ color:'#8B7D9B' }}>点击卡牌翻转查看详情 · 自动轮播</p>
+          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星座长廊</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>点击卡牌翻转查看详情</p>
         </div>
       </div>
       <div className="relative px-6 max-w-[1200px] mx-auto"
