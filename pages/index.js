@@ -613,8 +613,7 @@ function FeaturesSection() {
   const [drawnCard, setDrawnCard] = useState(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [showResult, setShowResult] = useState(false)
-  const intervalRef = useRef(null)
-  const cardElRef = useRef(null)
+  const [shuffleIdx, setShuffleIdx] = useState(0)
 
   const startDraw = () => {
     if (isDrawing) return
@@ -622,26 +621,19 @@ function FeaturesSection() {
     setShowResult(false)
     setDrawnCard(null)
 
-    // 洗牌动画：快速切换卡牌
     let count = 0
-    intervalRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       count++
-      const randomIdx = Math.floor(Math.random() * ALL_CARDS.length)
-      setDrawnCard(ALL_CARDS[randomIdx])
-      if (count >= 18) {
-        clearInterval(intervalRef.current)
-        // 最终确定
-        const finalIdx = Math.floor(Math.random() * ALL_CARDS.length)
-        setDrawnCard(ALL_CARDS[finalIdx])
+      setShuffleIdx(Math.floor(Math.random() * ALL_CARDS.length))
+      if (count >= 20) {
+        clearInterval(interval)
+        const final = ALL_CARDS[Math.floor(Math.random() * ALL_CARDS.length)]
+        setDrawnCard(final)
         setIsDrawing(false)
         setShowResult(true)
       }
-    }, 80)
+    }, 100)
   }
-
-  useEffect(() => {
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [])
 
   return (
     <section id="features" className="relative z-10 py-24"
@@ -663,45 +655,52 @@ function FeaturesSection() {
             <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>DAILY DRAW</p>
             <h3 className="text-lg font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>每日一牌</h3>
             <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>
-              点击下方牌面，从78张塔罗牌中抽取今日指引
+              点击卡牌，从78张塔罗牌中抽取今日指引
             </p>
 
             <div className="flex gap-5 items-start">
-              {/* 左侧卡牌 */}
-              <div className="shrink-0 relative" style={{ width:110 }}>
-                <div ref={cardElRef}
-                  className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${isDrawing ? 'animate-shuffle' : showResult ? '' : 'hover:-translate-y-1'}`}
+              {/* 左侧卡牌（加大到135px） */}
+              <div className="shrink-0" style={{ width:135 }}>
+                <div onClick={startDraw}
+                  className="rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 relative"
                   style={{
-                    aspectRatio: '5/7',
-                    border: drawnCard && showResult
-                      ? '1.5px solid rgba(212,175,55,0.25)'
-                      : '1px solid rgba(212,175,55,0.12)',
-                    boxShadow: drawnCard && showResult
-                      ? '0 0 30px rgba(212,175,55,0.12)'
-                      : '0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                  onClick={startDraw}>
-                  {drawnCard && showResult && drawnCard.src ? (
+                    aspectRatio:'5/7',
+                    border: showResult ? '1.5px solid rgba(212,175,55,0.25)' : '1px solid rgba(212,175,55,0.12)',
+                    boxShadow: showResult ? '0 0 30px rgba(212,175,55,0.12)' : '0 4px 12px rgba(0,0,0,0.3)',
+                  }}>
+                  {isDrawing ? (
+                    <div className="w-full h-full flex items-center justify-center relative overflow-hidden"
+                      style={{ background:'linear-gradient(145deg, #1a0f2a, #0f0818)' }}>
+                      <div key={shuffleIdx} className="absolute inset-0 flex items-center justify-center"
+                        style={{ animation:'fadeInFast 0.08s ease-out forwards' }}>
+                        <span className="text-xs tracking-[3px]" style={{ color:'rgba(212,175,55,0.6)' }}>
+                          {ALL_CARDS[shuffleIdx]?.num}
+                        </span>
+                      </div>
+                    </div>
+                  ) : showResult && drawnCard ? (
                     <img src={drawnCard.src} alt={drawnCard.name}
                       style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}/>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2"
                       style={{ background:'linear-gradient(145deg, #1a0f2a, #0f0818)' }}>
-                      <span className="text-lg" style={{ color:'rgba(212,175,55,0.3)' }}>✦</span>
-                      <span className="text-[10px] tracking-[3px]" style={{ color:'rgba(212,175,55,0.4)' }}>
-                        {isDrawing ? '抽牌中...' : '点击抽牌'}
-                      </span>
+                      <span className="text-xl" style={{ color:'rgba(212,175,55,0.3)' }}>✦</span>
+                      <span className="text-[10px] tracking-[3px]" style={{ color:'rgba(212,175,55,0.4)' }}>点击抽牌</span>
                     </div>
                   )}
                 </div>
                 {!showResult && !isDrawing && (
                   <button onClick={startDraw}
                     className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] cursor-pointer transition-all border-none hover:-translate-y-0.5"
-                    style={{
-                      background:'linear-gradient(135deg, #8B6914, #D4AF37)',
-                      color:'#07060a',
-                    }}>
-                    开始抽牌
+                    style={{ background:'linear-gradient(135deg, #8B6914, #D4AF37)', color:'#07060a' }}>
+                    抽一张
+                  </button>
+                )}
+                {showResult && (
+                  <button onClick={() => { setShowResult(false); setDrawnCard(null) }}
+                    className="w-full mt-2 py-1.5 rounded-lg text-[10px] tracking-[2px] cursor-pointer transition-all border-none"
+                    style={{ background:'rgba(212,175,55,0.06)', color:'#7A6D8A', border:'1px solid rgba(212,175,55,0.06)' }}>
+                    再抽一次
                   </button>
                 )}
               </div>
@@ -716,11 +715,15 @@ function FeaturesSection() {
                     <p className="text-xs mt-0.5" style={{ color:'#D4AF37' }}>{drawnCard.en}</p>
                     <div className="w-6 h-px my-2" style={{ background:'rgba(212,175,55,0.3)' }}/>
                     <p className="text-xs leading-relaxed" style={{ color:'#B8A9C9' }}>
+                      <span style={{ color:'#D4AF37' }}>今日运势 · </span>
+                      {drawnCard.desc}
+                    </p>
+                    <p className="text-xs mt-2 leading-relaxed" style={{ color:'#A99BB8' }}>
                       <span style={{ color:'#D4AF37' }}>正位 · </span>
                       {drawnCard.upright}
                     </p>
-                    <p className="text-xs mt-2 leading-relaxed" style={{ color:'#7A6D8A' }}>
-                      点击下方按钮查看78张牌完整解读与每日运势
+                    <p className="text-[10px] mt-2" style={{ color:'#5A4D6A' }}>
+                      点击下方查看完整卡牌解读
                     </p>
                     <a href="#cta"
                       className="inline-block mt-3 py-2 px-5 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
@@ -732,12 +735,12 @@ function FeaturesSection() {
                     </a>
                   </div>
                 ) : !isDrawing ? (
-                  <div>
+                  <div className="flex flex-col justify-center h-full">
                     <p className="text-sm" style={{ color:'#7A6D8A' }}>
-                      点击左侧牌面或按钮，从78张塔罗牌中抽取一张属于你的今日指引
+                      点击左侧卡牌，从78张塔罗牌中抽取你的今日指引
                     </p>
-                    <p className="text-xs mt-3" style={{ color:'#5A4D6A' }}>
-                      ✦ 包含22张大阿卡纳 + 56张小阿卡纳
+                    <p className="text-xs mt-2" style={{ color:'#5A4D6A' }}>
+                      ✦ 22张大阿卡纳 + 56张小阿卡纳
                     </p>
                   </div>
                 ) : (
@@ -826,6 +829,10 @@ function FeaturesSection() {
         @keyframes fadeIn {
           0% { opacity:0; transform:translateY(8px); }
           100% { opacity:1; transform:translateY(0); }
+        }
+        @keyframes fadeInFast {
+          0% { opacity:0; }
+          100% { opacity:1; }
         }
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out forwards;
