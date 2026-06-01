@@ -16,7 +16,7 @@ const CARDS = {
   chariot: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg',
   strength: 'https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg',
   hermit: 'https://upload.wikimedia.org/wikipedia/commons/6/68/RWS_Tarot_09_Hermit.jpg',
-  wheel: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/RWS_Tarot_10_Wheel.jpg',
+  wheel: 'https://raw.githubusercontent.com/metabismuth/tarot-json/master/cards/m10.jpg',
   justice: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg',
   hanged: 'https://upload.wikimedia.org/wikipedia/commons/5/52/RWS_Tarot_12_Hanged.jpg',
   death: 'https://upload.wikimedia.org/wikipedia/commons/d/d7/RWS_Tarot_13_Death.jpg',
