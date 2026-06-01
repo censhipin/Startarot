@@ -1371,29 +1371,18 @@ function ZodiacSection() {
 function CTASection() {
   return (
     <section id="cta" className="relative z-10 overflow-hidden"
-      style={{
-        minHeight: '85vh',
-        background: `
-          linear-gradient(180deg,
-            #1A0A3E 0%,
-            #150E40 20%,
-            #0F1A4A 45%,
-            #120E40 70%,
-            #0A0828 100%
-          )
-        `
-      }}>
-      {/* 大型星云 */}
+      style={{ minHeight: '85vh' }}>
+      {/* 星云装饰 */}
       <div className="absolute pointer-events-none" style={{ inset:0 }}>
-        <div className="absolute top-[15%] left-[20%] w-[600px] h-[500px] rounded-full opacity-[0.18]"
+        <div className="absolute top-[15%] left-[20%] w-[600px] h-[500px] rounded-full opacity-[0.10]"
           style={{ background:'radial-gradient(ellipse, #9B6DFF 0%, transparent 55%)' }}/>
-        <div className="absolute top-[30%] right-[10%] w-[500px] h-[400px] rounded-full opacity-[0.15]"
+        <div className="absolute top-[30%] right-[10%] w-[500px] h-[400px] rounded-full opacity-[0.08]"
           style={{ background:'radial-gradient(ellipse, #3A6AB5 0%, transparent 55%)' }}/>
-        <div className="absolute top-[60%] left-[10%] w-[450px] h-[350px] rounded-full opacity-[0.12]"
+        <div className="absolute top-[60%] left-[10%] w-[450px] h-[350px] rounded-full opacity-[0.06]"
           style={{ background:'radial-gradient(ellipse, #5B3A9B 0%, transparent 50%)' }}/>
         <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full"
           style={{
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.06) 40%, transparent 65%)',
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 65%)',
             transform:'translate(-50%,-50%)',
             animation: 'goldenPulse 6s ease-in-out infinite',
           }}/>
