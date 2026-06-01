@@ -25,7 +25,7 @@ const CARDS = {
   tower: 'https://upload.wikimedia.org/wikipedia/commons/5/53/RWS_Tarot_16_Tower.jpg',
   moon: 'https://upload.wikimedia.org/wikipedia/commons/7/7f/RWS_Tarot_18_Moon.jpg',
   sun: 'https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg',
-  judgement: 'https://upload.wikimedia.org/wikipedia/commons/0/03/RWS_Tarot_20_Judgement.jpg',
+  judgement: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/RWS_Tarot_20_Judgement.jpg',
   world: 'https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg',
 }
 const SUIT_EXAMPLES = {
@@ -667,7 +667,7 @@ function ExampleSection() {
               <div className="flex gap-2 mb-3">
                 {c.cards.map((src, j) => (
                   <div key={j} className="flex-1 rounded-lg overflow-hidden transition-all duration-300 hover:scale-105"
-                    style={{ border: '1px solid rgba(212,175,55,0.1)', background: '#0A0A1E' }}>
+                    style={{ border: '1px solid rgba(212,175,55,0.06)', background: 'transparent' }}>
                     <img src={src} alt=""
                       style={{ width:'100%', aspectRatio:'5/7', objectFit:'contain', display:'block' }}/>
                   </div>
