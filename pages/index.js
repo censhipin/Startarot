@@ -822,131 +822,192 @@ function ZodiacSection() {
   const [paused, setPaused] = useState(false)
   const [activeIdx, setActiveIdx] = useState(null)
   const [flipped, setFlipped] = useState({})
-  const [cardWidth, setCardWidth] = useState(260)
+  const [cardWidth, setCardWidth] = useState(200)
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
 
   useEffect(() => {
     function updateWidth() {
-      if (window.innerWidth < 768) setCardWidth(Math.min(window.innerWidth * 0.75, 280))
-      else setCardWidth(260)
+      if (window.innerWidth < 768) setCardWidth(140)
+      else setCardWidth(200)
     }
     updateWidth()
     window.addEventListener('resize', updateWidth)
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
+  // 慢速滚轮
   useEffect(() => {
     if (paused) return
     const el = scrollRef.current
     if (!el) return
     const interval = setInterval(() => {
-      el.scrollLeft += 1.3
+      el.scrollLeft += 0.7
       if (el.scrollLeft >= (el.scrollWidth - el.clientWidth)) el.scrollLeft = 0
-    }, 25)
+    }, 30)
     return () => clearInterval(interval)
   }, [paused])
 
   const items = [...ZODIACS, ...ZODIACS]
 
+  // 弧形偏移计算：中心=0，两侧渐低
+  const getArcOffset = (index, total) => {
+    const center = total / 2
+    const dist = Math.abs(index - center) / center
+    // dist: 0=中心, 1=边缘
+    const yOffset = Math.pow(dist, 1.5) * 22
+    const scale = 1 - dist * 0.25
+    return { yOffset, scale }
+  }
+
   return (
-    <section id="zodiac" className="relative z-10 py-24 overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-6">
-        <div className="text-center mb-14">
-          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>ZODIAC GALLERY</p>
-          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星座长廊</h2>
-          <p className="text-sm" style={{ color:'#8B7D9B' }}>点击卡牌翻转查看详情</p>
+    <section id="zodiac" className="relative z-10 py-28 overflow-hidden">
+      {/* 占星法阵背景 */}
+      <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+        {/* 星盘圆环 */}
+        <div className="absolute w-[800px] h-[800px] rounded-full opacity-[0.04]"
+          style={{ border:'1px solid #D4AF37', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
+        <div className="absolute w-[650px] h-[650px] rounded-full opacity-[0.03]"
+          style={{ border:'1px solid #D4AF37', borderStyle:'dashed', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
+        <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.04]"
+          style={{ border:'1px solid #D4AF37', left:'50%', top:'50%', transform:'translate(-50%,-60%)' }}/>
+        {/* 刻度装饰 */}
+        <div className="absolute w-[720px] h-[720px] rounded-full opacity-[0.02]"
+          style={{
+            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
+            background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)',
+          }}/>
+        {/* 星轨射线 */}
+        <div className="absolute w-[900px] h-[900px] opacity-[0.015]"
+          style={{
+            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
+            background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.5%, transparent 41%)',
+          }}/>
+        {/* 十二宫符号环绕 */}
+        <div className="absolute w-[580px] h-[580px] opacity-[0.06]"
+          style={{
+            left:'50%', top:'50%', transform:'translate(-50%,-60%)',
+            fontSize:14, letterSpacing:0,
+            fontFamily:'Georgia,serif', color:'#D4AF37',
+          }}>
+          {ZODIACS.map((z, i) => {
+            const angle = (i / 12) * 360 - 90
+            return (
+              <span key={i} className="absolute"
+                style={{
+                  left:'50%', top:'50%',
+                  transform:`rotate(${angle}deg) translateY(-290px) rotate(-${angle}deg)`,
+                  transformOrigin:'center center',
+                }}>
+                {z.sym}
+              </span>
+            )
+          })}
         </div>
       </div>
-      <div className="relative px-6 max-w-[1200px] mx-auto"
+
+      <div className="relative z-10 max-w-[1200px] mx-auto px-6">
+        <div className="text-center mb-14">
+          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>ZODIAC</p>
+          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星座长廊</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>选择你的守护星座 · 探索属于你的命运力量</p>
+        </div>
+      </div>
+
+      <div className="relative z-10 px-6 max-w-[1200px] mx-auto"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => { setPaused(false); setActiveIdx(null) }}>
         <div ref={scrollRef}
           className="overflow-x-auto"
           style={{ scrollbarWidth:'none', msOverflowStyle:'none', cursor:'grab' }}>
-          <div className="inline-flex gap-5 py-4">
+          <div className="inline-flex gap-4 py-6 px-8 items-start"
+            style={{ minHeight: cardWidth * 1.5 }}>
             {items.map((z, i) => {
               const isActive = activeIdx === i
               const flipKey = `zodiac-${i}`
               const isFlipped = flipped[flipKey] || false
+              const { yOffset, scale } = getArcOffset(i, items.length)
+              const cardW = cardWidth * scale
+              const baseW = 200
+              const baseScale = cardWidth / baseW
               return (
                 <div key={i}
                   className={`shrink-0 rounded-xl overflow-hidden transition-all duration-500 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
                   style={{
-                    width: cardWidth,
+                    width: cardW,
                     aspectRatio: '5/7',
                     perspective: '1200px',
+                    marginTop: `${yOffset}px`,
+                    zIndex: Math.round(scale * 100),
                   }}
                   onMouseEnter={() => setActiveIdx(i)}
                   onMouseLeave={() => setActiveIdx(null)}
                   onClick={() => { if (z.img) toggleFlip(flipKey) }}>
+                  {/* 底部金色光晕 */}
+                  <div className="absolute -bottom-4 left-0 right-0 h-8 rounded-full pointer-events-none z-0"
+                    style={{
+                      background:'radial-gradient(ellipse, rgba(212,175,55,0.15) 0%, transparent 60%)',
+                      opacity: isActive ? 0.25 : 0.08,
+                      transform:`scale(${1 + (1 - scale) * 0.5})`,
+                      transition:'opacity 0.4s',
+                    }}/>
                   <div className="relative w-full h-full transition-all duration-700"
                     style={{
                       transformStyle: 'preserve-3d',
                       transform: isFlipped ? 'rotateY(180deg)' : 'none',
+                      zIndex: 1,
                     }}>
                     <div className="absolute inset-0 rounded-xl overflow-hidden"
                       style={{
                         backfaceVisibility: 'hidden',
-                        border: isActive ? `2px solid ${z.color}` : z.img ? '1px solid rgba(212,175,55,0.05)' : '1px solid rgba(255,255,255,0.06)',
-                        transform: isActive ? `perspective(800px) translateY(-12px) scale(1.04)` : 'none',
-                        boxShadow: isActive ? `0 0 30px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1)` : '0 4px 16px rgba(0,0,0,0.3)',
+                        border: isActive ? `1.5px solid ${z.color}` : '1px solid rgba(212,175,55,0.06)',
+                        transform: isActive ? 'translateY(-8px) scale(1.02)' : 'none',
+                        boxShadow: isActive
+                          ? `0 0 25px rgba(212,175,55,0.15), 0 0 50px rgba(212,175,55,0.06)`
+                          : '0 4px 12px rgba(0,0,0,0.3)',
                         transition: 'all 0.4s',
                       }}>
                       {z.img ? (
                         <>
                           <img src={z.img} alt={z.name}
                             style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                          {/* 悬停遮罩 */}
                           <div className="absolute inset-0 transition-opacity duration-300"
                             style={{
-                              background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 60%)',
+                              background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 40%, transparent 60%)',
                               opacity: isActive ? 1 : 0,
                             }}>
                             <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                              <p className="text-xs mt-1" style={{ color:'#B8A9C9' }}>{z.date}</p>
+                              <p className="text-xs" style={{ color:'#B8A9C9' }}>{z.date}</p>
                               <p className="text-[10px] mt-0.5" style={{ color: z.color }}>{z.el} · {z.planet}</p>
                               <p className="text-[10px] mt-1 leading-relaxed" style={{ color:'#8B7D9B' }}>{z.desc}</p>
-                              <p className="text-[9px] mt-2 tracking-[2px]" style={{ color:'#D4AF37' }}>点击翻转看详情</p>
                             </div>
+                          </div>
+                          {/* 卡片底部 */}
+                          <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center"
+                            style={{
+                              background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
+                              opacity: isActive ? 0 : 1,
+                              transition:'opacity 0.3s',
+                            }}>
+                            <p className="text-xs f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
                           </div>
                         </>
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-5 text-center"
+                        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center"
                           style={{ background:`linear-gradient(180deg, ${z.color}08 0%, ${z.color}03 50%, rgba(10,10,18,1) 100%)` }}>
-                          <div className="text-5xl mb-2" style={{ color:`${z.color}66` }}>{z.sym}</div>
-                          <p className="text-base f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
-                          <p className="text-[11px] tracking-[3px]" style={{ color:`${z.color}99` }}>{z.en}</p>
-                          <div className="w-6 h-px my-2" style={{ background:`${z.color}44` }}/>
-                          <div className={`overflow-hidden transition-all duration-300 w-full ${isActive ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                            <p className="text-[10px]" style={{ color:'#8B7D9B' }}>{z.date}</p>
-                            <p className="text-[10px] mt-0.5" style={{ color: z.color }}>{z.el} · {z.planet}</p>
-                          </div>
+                          <div className="text-4xl mb-1" style={{ color:`${z.color}55` }}>{z.sym}</div>
+                          <p className="text-sm f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
+                          <p className="text-[10px] tracking-[2px]" style={{ color:`${z.color}88` }}>{z.en}</p>
+                          <div className="w-5 h-px my-1.5" style={{ background:`${z.color}33` }}/>
                           <div className="mt-auto">
-                            <span className="text-[8px] px-2 py-0.5 rounded-full tracking-[2px]"
-                              style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', color:'#5A4D6A' }}>
+                            <span className="text-[7px] px-2 py-0.5 rounded-full tracking-[2px]"
+                              style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)', color:'#5A4D6A' }}>
                               待生成
                             </span>
                           </div>
                         </div>
                       )}
-                    </div>
-                    <div className="absolute inset-0 rounded-xl overflow-hidden p-5 flex flex-col justify-center text-center"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)',
-                        background: `linear-gradient(145deg, ${z.color}15, ${z.color}08, #0A0A1E)`,
-                        border: `1px solid ${z.color}30`,
-                      }}>
-                      <div className="text-3xl mb-2" style={{ color: z.color }}>{z.sym}</div>
-                      <p className="text-lg f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
-                      <p className="text-[11px] tracking-[4px] mb-3" style={{ color: `${z.color}AA` }}>{z.en}</p>
-                      <div className="w-8 h-px mx-auto mb-3" style={{ background: `${z.color}55` }}/>
-                      <p className="text-[11px] leading-relaxed" style={{ color:'#B8A9C9' }}>{z.date}</p>
-                      <p className="text-[10px] mt-0.5" style={{ color: z.color }}>{z.el} · 守护星: {z.planet}</p>
-                      <div className="mt-2 p-2 rounded-lg" style={{ background:'rgba(0,0,0,0.2)' }}>
-                        <p className="text-[10px] leading-relaxed italic" style={{ color:'#D4AF37' }}>{z.desc}</p>
-                      </div>
-                      <p className="text-[9px] mt-3 tracking-[2px]" style={{ color:'#5A4D6A' }}>点击翻回</p>
                     </div>
                   </div>
                 </div>
@@ -954,11 +1015,6 @@ function ZodiacSection() {
             })}
           </div>
         </div>
-      </div>
-      <div className="text-center mt-10">
-        <p className="text-xs tracking-[3px]" style={{ color:'#5A4D6A' }}>
-          ✦ 点击卡牌翻转 · 查看星座详情 ✦
-        </p>
       </div>
     </section>
   )
