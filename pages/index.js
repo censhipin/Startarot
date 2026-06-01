@@ -106,7 +106,7 @@ function GlobalStyles() {
       @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap');
       * { margin:0; padding:0; box-sizing:border-box; }
       body {
-        background: #05050C;
+        background: #050B1A;
         color: #E2E8F0;
         font-family: -apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
         overflow-x: hidden;
@@ -258,29 +258,57 @@ function CosmicBackground() {
     <>
       <div className="fixed inset-0 z-0 pointer-events-none"
         style={{
-          background: 'linear-gradient(180deg, #140627 0%, #0A0A1E 40%, #05050C 100%)'
+          background: `
+            linear-gradient(180deg,
+              #12052B 0%,
+              #0B0420 18%,
+              #080D24 38%,
+              #050B1A 58%,
+              #0A0820 78%,
+              #050B1A 100%
+            )
+          `
         }}>
-        {/* 星云光晕 */}
-        <div className="absolute top-[-5%] left-[10%] w-[500px] h-[500px] rounded-full opacity-[0.06]"
+        {/* 顶部：深紫星云 */}
+        <div className="absolute top-[-10%] left-[5%] w-[700px] h-[600px] rounded-full opacity-[0.12]"
+          style={{ background:'radial-gradient(ellipse, #6B3FA0 0%, transparent 60%)' }}/>
+        <div className="absolute top-[5%] right-[10%] w-[500px] h-[500px] rounded-full opacity-[0.08]"
           style={{ background:'radial-gradient(circle, #7A4DFF 0%, transparent 60%)' }}/>
-        <div className="absolute top-[20%] right-[5%] w-[600px] h-[600px] rounded-full opacity-[0.04]"
-          style={{ background:'radial-gradient(circle, #D4AF37 0%, transparent 60%)' }}/>
-        <div className="absolute bottom-[10%] left-[30%] w-[400px] h-[400px] rounded-full opacity-[0.05]"
-          style={{ background:'radial-gradient(circle, #6EC8FF 0%, transparent 60%)' }}/>
-        <div className="absolute top-[50%] left-[5%] w-[350px] h-[350px] rounded-full opacity-[0.03]"
-          style={{ background:'radial-gradient(circle, #7A4DFF 0%, transparent 60%)' }}/>
+
+        {/* 中部：深蓝星云 */}
+        <div className="absolute top-[30%] left-[15%] w-[600px] h-[450px] rounded-full opacity-[0.10]"
+          style={{ background:'radial-gradient(ellipse, #1A3A6B 0%, transparent 55%)' }}/>
+        <div className="absolute top-[40%] right-[5%] w-[550px] h-[450px] rounded-full opacity-[0.08]"
+          style={{ background:'radial-gradient(ellipse, #0F2A5C 0%, transparent 55%)' }}/>
+
+        {/* 中部：金色光晕（页面中央区域） */}
+        <div className="absolute top-[45%] left-[50%] w-[500px] h-[500px] rounded-full opacity-[0.07]"
+          style={{
+            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 40%, transparent 65%)',
+            transform:'translate(-50%,-50%)',
+          }}/>
+        <div className="absolute top-[50%] left-[50%] w-[300px] h-[300px] rounded-full opacity-[0.04]"
+          style={{
+            background:'radial-gradient(circle, #D4AF37 0%, transparent 50%)',
+            transform:'translate(-50%,-50%)',
+          }}/>
+
+        {/* 底部：深蓝紫渐变 */}
+        <div className="absolute bottom-[5%] left-[20%] w-[500px] h-[400px] rounded-full opacity-[0.07]"
+          style={{ background:'radial-gradient(ellipse, #1A0A3A 0%, transparent 55%)' }}/>
+        <div className="absolute bottom-[0%] right-[20%] w-[450px] h-[350px] rounded-full opacity-[0.06]"
+          style={{ background:'radial-gradient(ellipse, #0A1A3A 0%, transparent 55%)' }}/>
       </div>
-      <ThreeLayerParticles />
+      <StarParticles />
     </>
   )
 }
 
-/* ================================ 三层粒子系统 ================================ */
-function ThreeLayerParticles() {
+/* ================================ 星空粒子 ================================ */
+function StarParticles() {
   return (
     <div className="fixed inset-0 z-[1] pointer-events-none overflow-hidden">
-      {/* 第一层：小型星星 */}
-      <canvas id="particle-layer-1" className="absolute inset-0 w-full h-full"
+      <canvas className="absolute inset-0 w-full h-full"
         ref={el => {
           if (!el || el.dataset.done) return
           el.dataset.done = '1'
@@ -289,13 +317,18 @@ function ThreeLayerParticles() {
           const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
           resize()
           window.addEventListener('resize', resize)
-          for (let i = 0; i < 150; i++) {
+          for (let i = 0; i < 130; i++) {
+            const isBright = Math.random() > 0.8
+            const isGold = Math.random() > 0.75
             stars.push({
-              x: Math.random() * w, y: Math.random() * h,
-              r: Math.random() * 1.5 + 0.3,
-              a: Math.random() * 0.6 + 0.1,
-              speed: Math.random() * 0.15 + 0.05,
+              x: Math.random() * w,
+              y: Math.random() * h,
+              r: isBright ? Math.random() * 2 + 1.5 : Math.random() * 1.5 + 0.3,
+              a: isBright ? Math.random() * 0.8 + 0.4 : Math.random() * 0.5 + 0.15,
+              speed: Math.random() * 0.2 + 0.03,
               phase: Math.random() * Math.PI * 2,
+              twinkle: Math.random() > 0.5,
+              hue: isGold ? 45 : (Math.random() > 0.7 ? 0 : null),
             })
           }
           let id
@@ -303,88 +336,18 @@ function ThreeLayerParticles() {
             ctx.clearRect(0, 0, w, h)
             const t = Date.now() / 1000
             stars.forEach(s => {
-              const alpha = s.a * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase))
-              ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
-              ctx.fillStyle = `rgba(255,255,255,${alpha})`
-              ctx.fill()
-            })
-            id = requestAnimationFrame(draw)
-          }
-          draw()
-          el._cleanup = () => { cancelAnimationFrame(id); window.removeEventListener('resize', resize) }
-        }}/>
-      {/* 第二层：金色粒子 */}
-      <canvas id="particle-layer-2" className="absolute inset-0 w-full h-full"
-        ref={el => {
-          if (!el || el.dataset.done) return
-          el.dataset.done = '1'
-          const ctx = el.getContext('2d')
-          let w, h, parts = []
-          const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
-          resize()
-          window.addEventListener('resize', resize)
-          for (let i = 0; i < 40; i++) {
-            parts.push({
-              x: Math.random() * w, y: Math.random() * h,
-              r: Math.random() * 2.5 + 0.5,
-              a: Math.random() * 0.3 + 0.05,
-              speed: Math.random() * 0.08 + 0.02,
-              driftX: (Math.random() - 0.5) * 0.2,
-              driftY: (Math.random() - 0.5) * 0.15,
-              phase: Math.random() * Math.PI * 2,
-            })
-          }
-          let id
-          function draw() {
-            ctx.clearRect(0, 0, w, h)
-            const t = Date.now() / 1000
-            parts.forEach(p => {
-              const px = p.x + Math.sin(t * 0.05 + p.phase) * p.driftX * 30
-              const py = p.y + Math.cos(t * 0.05 + p.phase) * p.driftY * 30
-              const pulse = 0.5 + 0.5 * Math.sin(t * p.speed + p.phase)
+              let alpha = s.a
+              if (s.twinkle) {
+                alpha = s.a * (0.4 + 0.6 * Math.abs(Math.sin(t * s.speed + s.phase)))
+              }
               ctx.beginPath()
-              ctx.arc(px, py, p.r * (0.8 + 0.2 * pulse), 0, Math.PI * 2)
-              ctx.fillStyle = `rgba(212,175,55,${p.a * pulse})`
+              ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
+              if (s.hue) {
+                ctx.fillStyle = `hsla(${s.hue}, 70%, 70%, ${alpha * 0.5})`
+              } else {
+                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`
+              }
               ctx.fill()
-            })
-            id = requestAnimationFrame(draw)
-          }
-          draw()
-          el._cleanup = () => { cancelAnimationFrame(id); window.removeEventListener('resize', resize) }
-        }}/>
-      {/* 第三层：模糊光斑 */}
-      <canvas id="particle-layer-3" className="absolute inset-0 w-full h-full blur-sm"
-        ref={el => {
-          if (!el || el.dataset.done) return
-          el.dataset.done = '1'
-          const ctx = el.getContext('2d')
-          let w, h, blobs = []
-          const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
-          resize()
-          window.addEventListener('resize', resize)
-          for (let i = 0; i < 12; i++) {
-            blobs.push({
-              x: Math.random() * w, y: Math.random() * h,
-              r: Math.random() * 80 + 30,
-              a: Math.random() * 0.06 + 0.02,
-              speed: Math.random() * 0.04 + 0.01,
-              hue: Math.random() > 0.5 ? 212 : (Math.random() > 0.5 ? 175 : 270),
-              phase: Math.random() * Math.PI * 2,
-            })
-          }
-          let id
-          function draw() {
-            ctx.clearRect(0, 0, w, h)
-            const t = Date.now() / 1000
-            blobs.forEach(b => {
-              const pulse = 0.5 + 0.5 * Math.sin(t * b.speed + b.phase)
-              const cx = b.x + Math.sin(t * 0.02 + b.phase) * 20
-              const cy = b.y + Math.cos(t * 0.02 + b.phase) * 20
-              const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, b.r)
-              grad.addColorStop(0, `hsla(${b.hue}, 50%, 60%, ${b.a * pulse})`)
-              grad.addColorStop(1, `hsla(${b.hue}, 50%, 60%, 0)`)
-              ctx.fillStyle = grad
-              ctx.fillRect(cx - b.r, cy - b.r, b.r * 2, b.r * 2)
             })
             id = requestAnimationFrame(draw)
           }
