@@ -855,7 +855,7 @@ function ZodiacSection() {
     const el = scrollRef.current
     if (!el) return
     const interval = setInterval(() => {
-      el.scrollLeft += 1.8
+      el.scrollLeft += 1.3
       if (el.scrollLeft >= (el.scrollWidth - el.clientWidth)) el.scrollLeft = 0
     }, 25)
     return () => clearInterval(interval)
@@ -881,8 +881,8 @@ function ZodiacSection() {
           <div className="inline-flex gap-5 py-4">
             {items.map((z, i) => {
               const isActive = activeIdx === i
-              const isFlipped = flipped[i] || false
               const flipKey = `zodiac-${i}`
+              const isFlipped = flipped[flipKey] || false
               return (
                 <div key={i}
                   className={`shrink-0 rounded-xl overflow-hidden transition-all duration-500 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
