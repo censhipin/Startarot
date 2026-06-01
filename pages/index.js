@@ -553,8 +553,98 @@ function GallerySection() {
   )
 }
 
+/* ================================ 78张完整牌数据 ================================ */
+const ALL_CARDS = (() => {
+  const major = [
+    { id:'m0', name:'愚人', en:'The Fool', num:'0', src:CARDS.fool, upright:'新的开始、冒险、信任、纯真', reversed:'鲁莽、轻率', mean:'新的开始 · 冒险 · 纯真' },
+    { id:'m1', name:'魔术师', en:'The Magician', num:'I', src:CARDS.magician, upright:'创造力、自信、技能、资源', reversed:'操纵、才能浪费', mean:'创造力 · 自信 · 技能' },
+    { id:'m2', name:'女祭司', en:'The High Priestess', num:'II', src:CARDS.priestess, upright:'直觉、内在智慧、神秘', reversed:'秘密、表面现象', mean:'直觉 · 智慧 · 神秘' },
+    { id:'m3', name:'女皇', en:'The Empress', num:'III', src:CARDS.empress, upright:'丰饶、母性、自然、舒适', reversed:'依赖、创造受阻', mean:'丰饶 · 自然 · 舒适' },
+    { id:'m4', name:'皇帝', en:'The Emperor', num:'IV', src:CARDS.emperor, upright:'权威、结构、稳定', reversed:'专制、僵化', mean:'权威 · 结构 · 稳定' },
+    { id:'m5', name:'教皇', en:'The Hierophant', num:'V', src:CARDS.hierophant, upright:'传统、精神指引、信仰', reversed:'非正统、个人信念', mean:'传统 · 指引 · 信仰' },
+    { id:'m6', name:'恋人', en:'The Lovers', num:'VI', src:CARDS.lovers, upright:'爱情、选择、和谐', reversed:'不合、失衡', mean:'爱情 · 选择 · 和谐' },
+    { id:'m7', name:'战车', en:'The Chariot', num:'VII', src:CARDS.chariot, upright:'胜利、意志力、决心', reversed:'方向不明、失控', mean:'胜利 · 意志 · 决心' },
+    { id:'m8', name:'力量', en:'Strength', num:'VIII', src:CARDS.strength, upright:'勇气、内在力量、慈悲', reversed:'自我怀疑', mean:'勇气 · 力量 · 慈悲' },
+    { id:'m9', name:'隐士', en:'The Hermit', num:'IX', src:CARDS.hermit, upright:'内省、智慧、寻找真理', reversed:'孤独、退缩', mean:'内省 · 智慧 · 孤独' },
+    { id:'m10', name:'命运之轮', en:'Wheel of Fortune', num:'X', src:CARDS.wheel, upright:'变化、循环、转折点', reversed:'坏运气、抵制变化', mean:'变化 · 循环 · 命运' },
+    { id:'m11', name:'正义', en:'Justice', num:'XI', src:CARDS.justice, upright:'公平、真相、因果报应', reversed:'不公、欺骗', mean:'公平 · 真相 · 因果' },
+    { id:'m12', name:'倒吊人', en:'The Hanged Man', num:'XII', src:CARDS.hanged, upright:'暂停、牺牲、新视角', reversed:'拖延、抗拒', mean:'暂停 · 牺牲 · 视角' },
+    { id:'m13', name:'死神', en:'Death', num:'XIII', src:CARDS.death, upright:'结束、转变、放下、新生', reversed:'抗拒改变', mean:'结束 · 转变 · 新生' },
+    { id:'m14', name:'节制', en:'Temperance', num:'XIV', src:CARDS.temperance, upright:'平衡、调和、耐心', reversed:'失衡、过度', mean:'平衡 · 调和 · 耐心' },
+    { id:'m15', name:'恶魔', en:'The Devil', num:'XV', src:CARDS.devil, upright:'束缚、欲望、成瘾', reversed:'觉醒、挣脱', mean:'束缚 · 欲望 · 挣脱' },
+    { id:'m16', name:'高塔', en:'The Tower', num:'XVI', src:CARDS.tower, upright:'剧变、崩塌、觉醒', reversed:'抵抗改变', mean:'剧变 · 崩塌 · 重塑' },
+    { id:'m17', name:'星星', en:'The Star', num:'XVII', src:CARDS.star, upright:'希望、灵感、治愈', reversed:'绝望、失去方向', mean:'希望 · 灵感 · 治愈' },
+    { id:'m18', name:'月亮', en:'The Moon', num:'XVIII', src:CARDS.moon, upright:'恐惧、幻觉、潜意识', reversed:'焦虑消散', mean:'恐惧 · 幻觉 · 潜意识' },
+    { id:'m19', name:'太阳', en:'The Sun', num:'XIX', src:CARDS.sun, upright:'喜悦、成功、活力', reversed:'暂时低落', mean:'喜悦 · 成功 · 活力' },
+    { id:'m20', name:'审判', en:'Judgement', num:'XX', src:CARDS.judgement, upright:'重生、觉醒、清算', reversed:'自我怀疑', mean:'重生 · 觉醒 · 清算' },
+    { id:'m21', name:'世界', en:'The World', num:'XXI', src:CARDS.world, upright:'完成、成就、圆满', reversed:'未完成、拖延', mean:'完成 · 圆满 · 整合' },
+  ]
+  // 小阿卡纳（无公有领域图，用生成式占位）
+  const suits = [
+    { name:'权杖', en:'Wands', icon:'🔥', color:'#E84A3D', elements:[
+      'Ace','II','III','IV','V','VI','VII','VIII','IX','X','Page','Knight','Queen','King'] },
+    { name:'圣杯', en:'Cups', icon:'🏆', color:'#3498DB', elements:[
+      'Ace','II','III','IV','V','VI','VII','VIII','IX','X','Page','Knight','Queen','King'] },
+    { name:'宝剑', en:'Swords', icon:'⚔️', color:'#B8A9C9', elements:[
+      'Ace','II','III','IV','V','VI','VII','VIII','IX','X','Page','Knight','Queen','King'] },
+    { name:'星币', en:'Pentacles', icon:'💰', color:'#5DBB63', elements:[
+      'Ace','II','III','IV','V','VI','VII','VIII','IX','X','Page','Knight','Queen','King'] },
+  ]
+  const minor = []
+  suits.forEach(suit => {
+    suit.elements.forEach((el, i) => {
+      minor.push({
+        id: `${suit.en.toLowerCase()}-${i}`,
+        name: `${suit.name}${el}`,
+        en: `${el} of ${suit.en}`,
+        num: el,
+        src: null,
+        upright: '象征该领域的能量流动与变化',
+        reversed: '能量受阻或失衡',
+        mean: `${suit.icon} ${el} · ${suit.name}`,
+        suitColor: suit.color,
+        suitIcon: suit.icon,
+      })
+    })
+  })
+  return [...major, ...minor]
+})()
+
 /* ================================ 核心功能 ================================ */
 function FeaturesSection() {
+  const [drawnCard, setDrawnCard] = useState(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [showResult, setShowResult] = useState(false)
+  const intervalRef = useRef(null)
+  const cardElRef = useRef(null)
+
+  const startDraw = () => {
+    if (isDrawing) return
+    setIsDrawing(true)
+    setShowResult(false)
+    setDrawnCard(null)
+
+    // 洗牌动画：快速切换卡牌
+    let count = 0
+    intervalRef.current = setInterval(() => {
+      count++
+      const randomIdx = Math.floor(Math.random() * ALL_CARDS.length)
+      setDrawnCard(ALL_CARDS[randomIdx])
+      if (count >= 18) {
+        clearInterval(intervalRef.current)
+        // 最终确定
+        const finalIdx = Math.floor(Math.random() * ALL_CARDS.length)
+        setDrawnCard(ALL_CARDS[finalIdx])
+        setIsDrawing(false)
+        setShowResult(true)
+      }
+    }, 80)
+  }
+
+  useEffect(() => {
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [])
+
   return (
     <section id="features" className="relative z-10 py-24"
       style={{
@@ -568,50 +658,191 @@ function FeaturesSection() {
           <p className="text-sm" style={{ color:'#8B7D9B' }}>每个功能都用心做到位</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            { tag:'DAILY DRAW', title:'每日一牌',
-              desc:'每天一张今日指引牌，翻牌动画、正逆位深度解读、生活建议。每天30秒，养成与自己对话的习惯。',
-              img:CARDS.fool, label:'每日抽牌 · 愚人', sub:'正位 · 新的开始' },
-            { tag:'SPREADS', title:'多牌阵占卜',
-              desc:'三牌阵、凯尔特十字、感情/事业/财运/学业——覆盖生活各个领域。自定义牌阵也支持。' },
-            { tag:'LIBRARY', title:'78张牌完整牌库',
-              desc:'大阿卡纳 + 小阿卡纳四牌组，每张牌都有正/逆位含义、牌面象征解读、关键词标签。支持搜索和收藏。',
-              imgs:[CARDS.priestess, CARDS.justice, CARDS.tower, CARDS.sun, CARDS.world] },
-            { tag:'ZODIAC', title:'星座运势',
-              desc:'每日/每周/每月运势、星座配对分析。每个星座结合塔罗牌解读，给你不一样的运势体验।',
-              zodiac: true },
-          ].map((f, i) => (
-            <div key={i} className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
-              style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
-              <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>{f.tag}</p>
-              <h3 className="text-lg font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>{f.title}</h3>
-              <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>{f.desc}</p>
-              {f.img && <div className="flex gap-4 items-start">
-                <div className="w-[80px] shrink-0 rounded-lg overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.1)' }}>
-                  <img src={f.img} alt="" style={{ width:'100%', aspectRatio:'5/7', objectFit:'cover' }}/>
+
+          {/* 1. 每日一牌 · 交互抽牌 */}
+          <div className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
+            style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
+            <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>DAILY DRAW</p>
+            <h3 className="text-lg font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>每日一牌</h3>
+            <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>
+              点击下方牌面，从78张塔罗牌中抽取今日指引
+            </p>
+
+            <div className="flex gap-5 items-start">
+              {/* 左侧卡牌 */}
+              <div className="shrink-0 relative" style={{ width:110 }}>
+                <div ref={cardElRef}
+                  className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${isDrawing ? 'animate-shuffle' : showResult ? '' : 'hover:-translate-y-1'}`}
+                  style={{
+                    aspectRatio: '5/7',
+                    border: drawnCard && showResult
+                      ? '1.5px solid rgba(212,175,55,0.25)'
+                      : '1px solid rgba(212,175,55,0.12)',
+                    boxShadow: drawnCard && showResult
+                      ? '0 0 30px rgba(212,175,55,0.12)'
+                      : '0 4px 12px rgba(0,0,0,0.3)',
+                  }}
+                  onClick={startDraw}>
+                  {drawnCard && showResult && drawnCard.src ? (
+                    <img src={drawnCard.src} alt={drawnCard.name}
+                      style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                  ) : drawnCard && showResult && !drawnCard.src ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center"
+                      style={{ background:`linear-gradient(145deg, ${drawnCard.suitColor}22, #0A0A1E)` }}>
+                      <span className="text-2xl mb-1">{drawnCard.suitIcon}</span>
+                      <span className="text-[9px] tracking-[2px]" style={{ color:'#D4AF37' }}>{drawnCard.num}</span>
+                      <span className="text-[9px] mt-0.5" style={{ color:'#B8A9C9' }}>{drawnCard.name}</span>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2"
+                      style={{ background:'linear-gradient(145deg, #1a0f2a, #0f0818)' }}>
+                      <span className="text-lg" style={{ color:'rgba(212,175,55,0.3)' }}>✦</span>
+                      <span className="text-[10px] tracking-[3px]" style={{ color:'rgba(212,175,55,0.4)' }}>
+                        {isDrawing ? '抽牌中...' : '点击抽牌'}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="text-sm f-serif font-bold" style={{ color:'#F1F0FB' }}>{f.label}</p>
-                  <p className="text-xs mt-1" style={{ color:'#D4AF37' }}>{f.sub}</p>
-                </div>
-              </div>}
-              {f.imgs && <div className="flex gap-2">
-                {f.imgs.map((src, j) => (
-                  <div key={j} className="flex-1 rounded overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.06)' }}>
-                    <img src={src} alt="" style={{ width:'100%', aspectRatio:'5/7', objectFit:'cover' }}/>
+                {!showResult && !isDrawing && (
+                  <button onClick={startDraw}
+                    className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] cursor-pointer transition-all border-none hover:-translate-y-0.5"
+                    style={{
+                      background:'linear-gradient(135deg, #8B6914, #D4AF37)',
+                      color:'#07060a',
+                    }}>
+                    开始抽牌
+                  </button>
+                )}
+              </div>
+
+              {/* 右侧结果信息 */}
+              <div className="flex-1 min-w-0">
+                {showResult && drawnCard ? (
+                  <div className="animate-fadeIn">
+                    <p className="text-sm f-serif font-bold" style={{ color:'#F1F0FB' }}>
+                      {drawnCard.num} · {drawnCard.name}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color:'#D4AF37' }}>{drawnCard.en}</p>
+                    <div className="w-6 h-px my-2" style={{ background:'rgba(212,175,55,0.3)' }}/>
+                    <p className="text-xs leading-relaxed" style={{ color:'#B8A9C9' }}>
+                      <span style={{ color:'#D4AF37' }}>正位 · </span>
+                      {drawnCard.upright}
+                    </p>
+                    <p className="text-xs mt-2 leading-relaxed" style={{ color:'#7A6D8A' }}>
+                      点击下方按钮查看78张牌完整解读与每日运势
+                    </p>
+                    <a href="#cta"
+                      className="inline-block mt-3 py-2 px-5 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                      style={{
+                        background:'linear-gradient(135deg, #8B6914, #D4AF37)',
+                        color:'#07060a',
+                      }}>
+                      查看完整解读 →
+                    </a>
                   </div>
-                ))}
-              </div>}
-              {f.zodiac && <div className="flex items-center justify-center gap-2 p-3 rounded-xl flex-wrap"
-                style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
-                {ZODIACS.map(z => (
-                  <span key={z.name} className="text-lg" style={{ color: `${z.color}55` }}>{z.sym}</span>
-                ))}
-              </div>}
+                ) : !isDrawing ? (
+                  <div>
+                    <p className="text-sm" style={{ color:'#7A6D8A' }}>
+                      点击左侧牌面或按钮，从78张塔罗牌中抽取一张属于你的今日指引
+                    </p>
+                    <p className="text-xs mt-3" style={{ color:'#5A4D6A' }}>
+                      ✦ 包含22张大阿卡纳 + 56张小阿卡纳
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="inline-block w-6 h-6 rounded-full mb-2"
+                        style={{
+                          border:'2px solid rgba(212,175,55,0.15)',
+                          borderTopColor:'#D4AF37',
+                          animation:'spin 1s linear infinite',
+                        }}/>
+                      <p className="text-xs" style={{ color:'#D4AF37' }}>正在抽取...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* 2. 多牌阵占卜 */}
+          <div className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
+            style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
+            <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>SPREADS</p>
+            <h3 className="text-lg font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>多牌阵占卜</h3>
+            <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>
+              三牌阵、凯尔特十字、感情/事业/财运/学业——覆盖生活各个领域。自定义牌阵也支持。
+            </p>
+            <div className="flex items-end justify-center gap-2">
+              {[{ src:CARDS.fool, label:'过去' },{ src:CARDS.magician, label:'现在' },{ src:CARDS.world, label:'未来' }].map((item,i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <div className="rounded-lg overflow-hidden"
+                    style={{ width:i===1?80:65, aspectRatio:'5/7', border:'1px solid rgba(212,175,55,0.1)', transform:i===1?'translateY(-4px)':'none' }}>
+                    <img src={item.src} alt={item.label} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+                  </div>
+                  <span className="text-[10px] tracking-[2px]" style={{ color:'#5A4D6A' }}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-center mt-3" style={{ color:'#7A6D8A' }}>三牌阵 · 凯尔特十字 · 感情 · 事业 · 财运 · 学业</p>
+          </div>
+
+          {/* 3. 78张牌完整牌库 */}
+          <div className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
+            style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
+            <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>LIBRARY</p>
+            <h3 className="text-lg font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>78张牌完整牌库</h3>
+            <p className="text-sm mb-3 leading-relaxed" style={{ color:'#A99BB8' }}>
+              大阿卡纳 + 小阿卡纳四牌组，每张牌都有正/逆位含义、牌面象征解读、关键词标签。支持搜索和收藏。
+            </p>
+            <div className="flex gap-2">
+              {[CARDS.priestess, CARDS.justice, CARDS.tower, CARDS.sun, CARDS.world].map((src,i) => (
+                <div key={i} className="flex-1 rounded overflow-hidden" style={{ border:'1px solid rgba(212,175,55,0.06)' }}>
+                  <img src={src} alt="" style={{ width:'100%', aspectRatio:'5/7', objectFit:'cover' }}/>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. 星座运势 */}
+          <div className="p-6 rounded-2xl transition-all duration-300 hover:-translate-y-0.5 group"
+            style={{ background:'rgba(212,175,55,0.02)', border:'1px solid rgba(212,175,55,0.04)' }}>
+            <p className="text-xs tracking-[4px] mb-1" style={{ color:'#D4AF37' }}>ZODIAC</p>
+            <h3 className="text-lg font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>星座运势</h3>
+            <p className="text-sm mb-4 leading-relaxed" style={{ color:'#A99BB8' }}>
+              每日/每周/每月运势、星座配对分析。每个星座结合塔罗牌解读，给你不一样的运势体验।
+            </p>
+            <div className="flex items-center justify-center gap-2 p-3 rounded-xl flex-wrap"
+              style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
+              {ZODIACS.map(z => (
+                <span key={z.name} className="text-lg" style={{ color: `${z.color}55` }}>{z.sym}</span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+      <style>{`
+        @keyframes shuffle {
+          0%,100% { transform: translateY(0) rotateY(0deg); }
+          25% { transform: translateY(-4px) rotateY(10deg); }
+          50% { transform: translateY(2px) rotateY(-5deg); }
+          75% { transform: translateY(-2px) rotateY(5deg); }
+        }
+        .animate-shuffle {
+          animation: shuffle 0.15s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+          0% { opacity:0; transform:translateY(8px); }
+          100% { opacity:1; transform:translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </section>
   )
 }
