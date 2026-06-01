@@ -1441,10 +1441,13 @@ function CTASection() {
       </div>
 
       <div className="relative z-10 min-h-[85vh] flex flex-col items-center justify-center text-center px-6 py-20">
-        {/* 发光塔罗牌 */}
-        <div className="relative mb-8">
-          {/* 卡牌本体 */}
-          <div className="w-24 h-32 md:w-28 md:h-40 rounded-xl overflow-hidden mx-auto relative"
+        {/* 发光塔罗牌 + 旋转法阵 */}
+        <div className="relative mb-10 flex items-center justify-center">
+          <div className="absolute w-36 h-36 md:w-44 md:h-44 rounded-full"
+            style={{ border:'1px solid rgba(212,175,55,0.12)', animation:'slowSpin 20s linear infinite' }}/>
+          <div className="absolute w-28 h-28 md:w-36 md:h-36 rounded-full"
+            style={{ border:'1px solid rgba(212,175,55,0.08)', borderStyle:'dashed', animation:'slowSpin 25s linear infinite reverse' }}/>
+          <div className="w-20 h-28 md:w-24 md:h-32 rounded-xl overflow-hidden relative"
             style={{
               border:'2px solid rgba(212,175,55,0.25)',
               boxShadow:'0 0 50px rgba(212,175,55,0.1), 0 0 100px rgba(212,175,55,0.04)',
