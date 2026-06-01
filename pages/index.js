@@ -452,12 +452,12 @@ function HeroSection() {
 
   const CARD_COUNT = cards.length
   const STEP = (2 * Math.PI) / CARD_COUNT
-  const ORBIT_X = 110
-  const ORBIT_Y = 75
-  const TILT_Y = 50
-  const BASE_W = 120
-  const SCALE_MIN = 0.45
-  const SCALE_MAX = 1.35
+  const ORBIT_X = 160
+  const ORBIT_Y = 100
+  const TILT_Y = 65
+  const BASE_W = 150
+  const SCALE_MIN = 0.5
+  const SCALE_MAX = 1.4
 
   useEffect(() => {
     if (paused) return
@@ -549,13 +549,13 @@ function HeroSection() {
             </div>
           </div>
 
-          <div className="flex-[0_0_300px] max-lg:order-1 max-lg:flex-[0_0_220px]"
+          <div className="flex-[0_0_360px] max-lg:order-1 max-lg:flex-[0_0_260px]"
                onMouseEnter={() => setPaused(true)}
                onMouseLeave={() => setPaused(false)}>
-            <div className="relative select-none mx-auto" style={{ width:300, height:360, overflow:'visible' }}>
+            <div className="relative select-none mx-auto" style={{ width:360, height:440, overflow:'visible' }}>
               <div className="absolute pointer-events-none rounded-full"
                 style={{
-                  left:'50%', top:'50%', width:240, height:180,
+                  left:'50%', top:'50%', width:300, height:240,
                   transform:'translate(-50%,-50%)',
                   background:'radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 55%)',
                   zIndex:0,
@@ -582,7 +582,7 @@ function HeroSection() {
                         boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
                       }}>
                       <img src={card.src} alt={card.name}
-                        style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                        style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}/>
                     </div>
                   </div>
                 )
