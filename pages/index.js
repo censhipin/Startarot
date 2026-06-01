@@ -1207,7 +1207,7 @@ function ZodiacSection() {
   return (
     <section id="zodiac" className="relative z-10 py-28 pt-40 overflow-visible">
       {/* 占星法阵背景 */}
-      <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none z-0 flex items-start justify-center">
         <div className="relative w-full max-w-[900px] aspect-square"
           style={{ transform:'translateY(-8%)' }}>
           {/* 背景光晕 */}
