@@ -824,7 +824,6 @@ function ZodiacSection() {
   const [flipped, setFlipped] = useState({})
   const [cardWidth, setCardWidth] = useState(200)
   const cardRefs = useRef({})
-  const styleRefs = useRef({})
   const rafRef = useRef(null)
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
