@@ -90,6 +90,7 @@ export default function Home() {
         <HeroSection />
         <PopularSection />
         <TrendingSection />
+        <ExampleSection />
         <TarotIntro />
         <GallerySection />
         <FeaturesSection />
@@ -590,6 +591,112 @@ function TrendingSection() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ================================ 测算结果示例 ================================ */
+function ExampleSection() {
+  const cases = [
+    {
+      icon:'❤️', title:'爱情测算',
+      question:'他还喜欢我吗？',
+      cards: [CARDS.lovers, CARDS.star, CARDS.sun],
+      cardsNum: ['VI','XVII','XIX'],
+      result:'恋人正位表明你们之间存在强烈的情感连接，星星牌带来希望与治愈，太阳牌预示光明的前景。整体来看，对方对你有感情，但需要主动沟通确认。',
+      color:'#F472B6',
+    },
+    {
+      icon:'💼', title:'事业测算',
+      question:'我该跳槽吗？',
+      cards: [CARDS.magician, CARDS.chariot, CARDS.world],
+      cardsNum: ['I','VII','XXI'],
+      result:'魔术师代表你拥有充足的能力与资源，战车预示需要坚定的意志去做出改变，世界牌象征圆满的完成。三张牌共同指向——现在是跳槽的好时机。',
+      color:'#60A5FA',
+    },
+    {
+      icon:'💰', title:'财富测算',
+      question:'最近财运会变好吗？',
+      cards: [CARDS.wheel, CARDS.empress, CARDS.strength],
+      cardsNum: ['X','III','VIII'],
+      result:'命运之轮预示运势即将迎来转机，女皇象征丰饶与收获，力量牌提醒你保持耐心与内在的坚定。财运正在回升，但要避免冲动投资。',
+      color:'#FBBF24',
+    },
+    {
+      icon:'🔮', title:'人生方向',
+      question:'我接下来该怎么走？',
+      cards: [CARDS.fool, CARDS.death, CARDS.judgement],
+      cardsNum: ['0','XIII','XX'],
+      result:'愚人代表新的开始与冒险，死神预示需要放下过去才能迎来新生，审判牌召唤你听从内心的声音。放下包袱，大胆走向新的阶段。',
+      color:'#A78BFA',
+    },
+  ]
+
+  return (
+    <section className="relative z-10 py-20"
+      style={{
+        borderTop: '1px solid rgba(212,175,55,0.05)',
+        borderBottom: '1px solid rgba(212,175,55,0.05)',
+      }}>
+      <div className="max-w-[1100px] mx-auto px-6">
+        <div className="text-center mb-12">
+          <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>READING EXAMPLES</p>
+          <h2 className="text-3xl font-bold mb-2 f-serif" style={{ color:'#FFF8E7' }}>测算结果示例</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>真实用户案例 · 每张牌都蕴藏着答案</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {cases.map((c, i) => (
+            <div key={i}
+              className="p-5 rounded-xl transition-all duration-400"
+              style={{
+                background: 'rgba(212,175,55,0.02)',
+                border: '1px solid rgba(212,175,55,0.06)',
+              }}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">{c.icon}</span>
+                <h3 className="text-base f-serif font-bold" style={{ color:'#FFF8E7' }}>{c.title}</h3>
+              </div>
+
+              <p className="text-xs mb-3" style={{ color:'#7A6D8A' }}>
+                <span style={{ color: c.color }}>Q: </span>「{c.question}」
+              </p>
+
+              <div className="flex gap-2 mb-3">
+                {c.cards.map((src, j) => (
+                  <div key={j} className="flex-1 rounded-lg overflow-hidden transition-all duration-300 hover:scale-105"
+                    style={{ border: '1px solid rgba(212,175,55,0.1)', background: '#0A0A1E' }}>
+                    <img src={src} alt=""
+                      style={{ width:'100%', aspectRatio:'5/7', objectFit:'contain', display:'block' }}/>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-1 justify-center mb-3">
+                {c.cardsNum.map((num, j) => (
+                  <span key={j} className="text-[9px] tracking-[2px] px-2 py-0.5 rounded"
+                    style={{ background:'rgba(212,175,55,0.06)', color:'#D4AF37' }}>
+                    {num}
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-xs leading-relaxed mb-3 line-clamp-4" style={{ color:'#B8A9C9' }}>
+                {c.result}
+              </p>
+
+              <a href="#cta"
+                className="inline-block w-full text-center py-2 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                style={{
+                  background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
+                  color: '#07060a',
+                }}>
+                我也要测算 →
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </section>
