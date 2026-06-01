@@ -983,8 +983,10 @@ function ZodiacSection() {
                       }}>
                       {z.img ? (
                         <>
+                          {/* 正面：卡牌完整显示 */}
                           <img src={z.img} alt={z.name}
-                            style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+                            style={{ width:'100%', height:'100%', objectFit:'contain', display:'block' }}/>
+                          {/* 悬停遮罩（只显示信息，不显示卡牌名） */}
                           <div className="absolute inset-0 transition-opacity duration-300"
                             style={{
                               background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 40%, transparent 60%)',
@@ -996,14 +998,24 @@ function ZodiacSection() {
                               <p className="text-[10px] mt-1 leading-relaxed" style={{ color:'#8B7D9B' }}>{z.desc}</p>
                             </div>
                           </div>
-                          <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center"
+                          {/* 背面：星座运势与祝福 */}
+                          <div className="absolute inset-0 rounded-xl overflow-hidden p-4 flex flex-col justify-center text-center"
                             style={{
-                              background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
-                              opacity: isActive ? 0 : 1,
-                              transition:'opacity 0.3s',
+                              backfaceVisibility: 'hidden',
+                              transform: 'rotateY(180deg)',
+                              background: `linear-gradient(145deg, ${z.color}18, ${z.color}08, #0A0A1E)`,
+                              border: `1px solid ${z.color}30`,
                             }}>
-                            <p className="text-xs f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
-                            <p className="text-[8px] tracking-[2px]" style={{ color:'#7A6D8A' }}>{z.en}</p>
+                            <div className="text-2xl mb-1" style={{ color: z.color }}>{z.sym}</div>
+                            <p className="text-sm f-serif font-bold" style={{ color:'#FFF8E7' }}>{z.name}</p>
+                            <p className="text-[10px] tracking-[3px] mb-2" style={{ color: `${z.color}AA` }}>{z.en}</p>
+                            <div className="w-6 h-px mx-auto mb-2" style={{ background: `${z.color}55` }}/>
+                            <p className="text-[10px]" style={{ color:'#B8A9C9' }}>{z.date}</p>
+                            <p className="text-[9px] mt-0.5" style={{ color: z.color }}>{z.el} · {z.planet}</p>
+                            <div className="mt-1.5 p-1.5 rounded-lg" style={{ background:'rgba(0,0,0,0.2)' }}>
+                              <p className="text-[9px] leading-relaxed italic" style={{ color:'#D4AF37' }}>{z.desc}</p>
+                            </div>
+                            <p className="text-[8px] mt-2 tracking-[2px]" style={{ color:'#5A4D6A' }}>点击翻回</p>
                           </div>
                         </>
                       ) : (
