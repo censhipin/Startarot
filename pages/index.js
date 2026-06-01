@@ -882,7 +882,7 @@ function ZodiacSection() {
     const el = scrollRef.current
     if (!el) return
     const interval = setInterval(() => {
-      el.scrollLeft += 0.7
+      el.scrollLeft += 1.0
       if (el.scrollLeft >= (el.scrollWidth - el.clientWidth)) el.scrollLeft = 0
     }, 30)
     return () => clearInterval(interval)
