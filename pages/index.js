@@ -164,28 +164,6 @@ function CosmicBackground() {
           style={{ background:'radial-gradient(ellipse, #2A5A9B 0%, transparent 50%)' }}/>
         <div className="absolute top-[40%] right-[5%] w-[550px] h-[450px] rounded-full opacity-[0.15]"
           style={{ background:'radial-gradient(ellipse, #1A4A8C 0%, transparent 50%)' }}/>
-        {/* 金色光晕 - 发散效果 */}
-        <div className="absolute w-[700px] h-[700px] rounded-full opacity-[0.12]"
-          style={{
-            left:'50%', top:'46%',
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.05) 25%, transparent 60%)',
-            transform:'translate(-50%,-50%)',
-            animation: 'goldenRadiate 6s ease-in-out infinite',
-          }}/>
-        <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.10]"
-          style={{
-            left:'48%', top:'48%',
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.04) 30%, transparent 55%)',
-            transform:'translate(-50%,-50%)',
-            animation: 'goldenRadiate2 8s ease-in-out infinite',
-          }}/>
-        <div className="absolute w-[350px] h-[350px] rounded-full opacity-[0.08]"
-          style={{
-            left:'52%', top:'44%',
-            background:'radial-gradient(circle, #D4AF37 0%, rgba(212,175,55,0.03) 30%, transparent 50%)',
-            transform:'translate(-50%,-50%)',
-            animation: 'goldenRadiate3 10s ease-in-out infinite',
-          }}/>
         {/* 底部深蓝紫 */}
         <div className="absolute bottom-[5%] left-[20%] w-[500px] h-[400px] rounded-full opacity-[0.12]"
           style={{ background:'radial-gradient(ellipse, #2A1A5A 0%, transparent 50%)' }}/>
@@ -193,20 +171,6 @@ function CosmicBackground() {
           style={{ background:'radial-gradient(ellipse, #1A2A5A 0%, transparent 50%)' }}/>
       </div>
       <StarParticles />
-      <style>{`
-        @keyframes goldenRadiate {
-          0%,100% { opacity:0.12; transform:translate(-50%,-50%) scale(1); }
-          50% { opacity:0.18; transform:translate(-50%,-50%) scale(1.15); }
-        }
-        @keyframes goldenRadiate2 {
-          0%,100% { opacity:0.10; transform:translate(-50%,-50%) scale(1); }
-          50% { opacity:0.16; transform:translate(-50%,-50%) scale(1.2); }
-        }
-        @keyframes goldenRadiate3 {
-          0%,100% { opacity:0.08; transform:translate(-50%,-50%) scale(1); }
-          50% { opacity:0.14; transform:translate(-50%,-50%) scale(1.25); }
-        }
-      `}</style>
     </>
   )
 }
