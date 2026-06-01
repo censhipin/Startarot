@@ -824,7 +824,8 @@ function ZodiacSection() {
   const [flipped, setFlipped] = useState({})
   const [cardWidth, setCardWidth] = useState(200)
   const cardRefs = useRef({})
-  const [arcData, setArcData] = useState({})
+  const styleRefs = useRef({})
+  const rafRef = useRef(null)
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
 
@@ -838,26 +839,31 @@ function ZodiacSection() {
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  // 实时弧形计算
+  // 滚动弧形计算 - 直接操作DOM，不触发React渲染
   const updateArc = useCallback(() => {
     const container = scrollRef.current
     if (!container) return
-    const cr = container.getBoundingClientRect()
-    const centerX = cr.left + cr.width / 2
-    const maxDist = cr.width * 0.7
-    const data = {}
-    Object.entries(cardRefs.current).forEach(([key, el]) => {
-      if (!el) return
-      const rect = el.getBoundingClientRect()
-      const cardCenter = rect.left + rect.width / 2
-      const dist = Math.min(Math.abs(cardCenter - centerX) / maxDist, 2)
-      const yOffset = Math.pow(dist, 1.8) * 25
-      const scale = Math.max(0.55, 1 - dist * 0.3)
-      const brightness = Math.max(0.35, 1 - dist * 0.4)
-      data[key] = { yOffset, scale, brightness }
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(() => {
+      const cr = container.getBoundingClientRect()
+      const centerX = cr.left + cr.width / 2
+      const maxDist = cr.width * 0.7
+      Object.entries(cardRefs.current).forEach(([key, el]) => {
+        if (!el) return
+        const rect = el.getBoundingClientRect()
+        const cardCenter = rect.left + rect.width / 2
+        const dist = Math.min(Math.abs(cardCenter - centerX) / maxDist, 2)
+        const yOffset = Math.pow(dist, 1.8) * 25
+        const scale = Math.max(0.55, 1 - dist * 0.3)
+        const brightness = Math.max(0.35, 1 - dist * 0.4)
+        el.style.marginTop = `${yOffset}px`
+        el.style.width = `${cardWidth * scale}px`
+        el.style.zIndex = Math.round(scale * 100)
+        el.style.opacity = brightness
+        el.style.filter = scale < 0.7 ? 'blur(0.3px)' : 'none'
+      })
     })
-    setArcData(data)
-  }, [])
+  }, [cardWidth])
 
   useEffect(() => {
     const container = scrollRef.current
@@ -865,7 +871,10 @@ function ZodiacSection() {
     const handler = () => updateArc()
     container.addEventListener('scroll', handler, { passive: true })
     updateArc()
-    return () => container.removeEventListener('scroll', handler)
+    return () => {
+      container.removeEventListener('scroll', handler)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
   }, [cardWidth, updateArc])
 
   useEffect(() => {
@@ -885,27 +894,25 @@ function ZodiacSection() {
     <section id="zodiac" className="relative z-10 py-28 overflow-hidden">
       {/* 占星法阵背景 */}
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
-        <div className="relative w-full max-w-[900px] aspect-square opacity-[0.05]"
-          style={{ transform:'translateY(-10%)' }}>
+        <div className="relative w-full max-w-[900px] aspect-square"
+          style={{ transform:'translateY(-8%)', opacity:0.08 }}>
           <div className="absolute inset-[3%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
           <div className="absolute inset-[13%] rounded-full"
             style={{ border:'1px solid #D4AF37', borderStyle:'dashed' }}/>
           <div className="absolute inset-[23%] rounded-full" style={{ border:'1px solid #D4AF37' }}/>
-          <div className="absolute inset-[8%] rounded-full opacity-[0.5]"
-            style={{ background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)' }}/>
+          <div className="absolute inset-[8%] rounded-full"
+            style={{ background:'repeating-conic-gradient(#D4AF37 0deg 1deg, transparent 1deg 6deg)', opacity:0.4 }}/>
           <div className="absolute inset-[2%]"
             style={{ background:'radial-gradient(circle at center, transparent 40%, #D4AF37 40.2%, transparent 40.5%)' }}/>
           {ZODIACS.map((z, i) => {
-            const angle = (i / 12) * 360 - 90
-            const r = 38
-            const rad = (angle * Math.PI) / 180
+            const rad = ((i / 12) * 360 - 90) * Math.PI / 180
             return (
               <span key={i} className="absolute text-xs"
                 style={{
-                  left:`${50 + r * Math.cos(rad)}%`,
-                  top:`${50 + r * Math.sin(rad)}%`,
+                  left:`${50 + 38 * Math.cos(rad)}%`,
+                  top:`${50 + 38 * Math.sin(rad)}%`,
                   transform:'translate(-50%,-50%)',
-                  color:'#D4AF37', opacity:0.4,
+                  color:'#D4AF37', opacity:0.5,
                 }}>
                 {z.sym}
               </span>
@@ -934,21 +941,19 @@ function ZodiacSection() {
               const isActive = activeIdx === i
               const flipKey = `zodiac-${i}`
               const isFlipped = flipped[flipKey] || false
-              const ad = arcData[i] || { yOffset:0, scale:1, brightness:1 }
-              const cardW = cardWidth * ad.scale
-
+              // 初始值（无state，首次渲染后由DOM操作更新）
+              const initW = cardWidth
               return (
                 <div key={i}
                   ref={el => cardRefs.current[i] = el}
                   className={`shrink-0 rounded-xl overflow-hidden transition-opacity duration-300 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
                   style={{
-                    width: cardW,
+                    width: initW,
                     aspectRatio: '5/7',
                     perspective: '1200px',
-                    marginTop: `${ad.yOffset}px`,
-                    zIndex: Math.round(ad.scale * 100),
-                    opacity: ad.brightness,
-                    filter: ad.scale < 0.7 ? 'blur(0.3px)' : 'none',
+                    marginTop: 0,
+                    zIndex: 100,
+                    opacity: 1,
                   }}
                   onMouseEnter={() => setActiveIdx(i)}
                   onMouseLeave={() => setActiveIdx(null)}
@@ -958,7 +963,6 @@ function ZodiacSection() {
                     style={{
                       background:'radial-gradient(ellipse, rgba(212,175,55,0.2) 0%, transparent 60%)',
                       opacity: isActive ? 0.35 : 0.12,
-                      transform:`scale(${1 + (1 - ad.scale) * 0.5})`,
                       transition:'opacity 0.4s',
                     }}/>
                   <div className="relative w-full h-full transition-all duration-700"
