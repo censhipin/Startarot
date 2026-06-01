@@ -930,8 +930,8 @@ function FeaturesSection() {
       <div className="max-w-[1100px] mx-auto px-6">
         <div className="text-center mb-14">
           <p className="text-xs tracking-[5px] mb-3" style={{ color:'#D4AF37' }}>FEATURES</p>
-          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>核心功能</h2>
-          <p className="text-sm" style={{ color:'#8B7D9B' }}>每个功能都用心做到位</p>
+          <h2 className="text-3xl font-bold mb-3 f-serif" style={{ color:'#FFF8E7' }}>探索命运的方式</h2>
+          <p className="text-sm" style={{ color:'#8B7D9B' }}>塔罗、星座与命运指引 · 为你揭示更多可能</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
