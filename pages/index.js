@@ -567,16 +567,19 @@ function TrendingSection() {
           <div className="inline-flex gap-4 py-2">
             {[...questions, ...questions].map((item, i) => (
               <div key={i}
-                className="shrink-0 w-[200px] p-5 rounded-xl transition-all duration-400 cursor-pointer hover:-translate-y-1 group"
+                className="shrink-0 w-[200px] p-5 rounded-xl transition-all duration-400 cursor-pointer hover:-translate-y-1 group flex flex-col"
                 style={{
                   background: 'rgba(255,255,255,0.02)',
                   backdropFilter: 'blur(12px)',
                   border: '1px solid rgba(212,175,55,0.06)',
+                  height: 200,
                 }}>
-                <div className="text-2xl mb-3">{item.icon}</div>
-                <p className="text-sm leading-relaxed mb-4" style={{ color:'#B8A9C9' }}>「{item.q}」</p>
+                <div className="text-2xl mb-2">{item.icon}</div>
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-sm truncate w-full text-center" style={{ color:'#B8A9C9' }}>「{item.q}」</p>
+                </div>
                 <a href="#cta"
-                  className="inline-block w-full text-center py-2 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5"
+                  className="inline-block w-full text-center py-2 rounded-lg text-xs font-medium no-underline tracking-[2px] transition-all duration-300 hover:-translate-y-0.5 mt-auto"
                   style={{
                     background: 'linear-gradient(135deg, #8B6914, #D4AF37)',
                     color: '#07060a',
