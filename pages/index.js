@@ -187,12 +187,15 @@ function StarParticles() {
         ref={el => {
           if (!el || el.dataset.done) return
           el.dataset.done = '1'
+          try {
+          const isMobile = window.innerWidth < 768
           const ctx = el.getContext('2d')
+          if (!ctx) return
           let w, h, stars = [], meteors = [], frame = 0
           const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
           resize()
           window.addEventListener('resize', resize)
-          for (let i = 0; i < 130; i++) {
+          for (let i = 0; i < (isMobile ? 40 : 130); i++) {
             const isBright = Math.random() > 0.8
             const isGold = Math.random() > 0.75
             stars.push({
@@ -248,6 +251,7 @@ function StarParticles() {
           }
           draw()
           el._cleanup = () => { cancelAnimationFrame(id); window.removeEventListener('resize', resize) }
+          } catch(e) { /* mobile fallback */ }
         }}/>
     </div>
   )
@@ -900,9 +904,19 @@ function FeaturesSection() {
   const [isDrawing, setIsDrawing] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [shuffleIdx, setShuffleIdx] = useState(0)
+  const [hasDrawnToday, setHasDrawnToday] = useState(false)
+
+  // 检查每日是否已抽
+  useEffect(() => {
+    const today = new Date().toDateString()
+    const lastDraw = localStorage.getItem('starot_lastDraw')
+    if (lastDraw === today) {
+      setHasDrawnToday(true)
+    }
+  }, [])
 
   const startDraw = () => {
-    if (isDrawing) return
+    if (isDrawing || hasDrawnToday) return
     setIsDrawing(true)
     setShowResult(false)
     setDrawnCard(null)
@@ -917,6 +931,8 @@ function FeaturesSection() {
         setDrawnCard(final)
         setIsDrawing(false)
         setShowResult(true)
+        setHasDrawnToday(true)
+        localStorage.setItem('starot_lastDraw', new Date().toDateString())
       }
     }, 100)
   }
@@ -975,11 +991,18 @@ function FeaturesSection() {
                     </div>
                   )}
                 </div>
-                {!showResult && !isDrawing && (
+                {!showResult && !isDrawing && !hasDrawnToday && (
                   <button onClick={startDraw}
                     className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] cursor-pointer transition-all border-none hover:-translate-y-0.5"
                     style={{ background:'linear-gradient(135deg, #8B6914, #D4AF37)', color:'#07060a' }}>
                     抽一张
+                  </button>
+                )}
+                {hasDrawnToday && !showResult && !isDrawing && (
+                  <button disabled
+                    className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] border-none"
+                    style={{ background:'rgba(212,175,55,0.06)', color:'#7A6D8A', border:'1px solid rgba(212,175,55,0.06)', cursor:'not-allowed' }}>
+                    今日已抽
                   </button>
                 )}
                 {showResult && (
@@ -1138,8 +1161,6 @@ function ZodiacSection() {
   const [activeIdx, setActiveIdx] = useState(null)
   const [flipped, setFlipped] = useState({})
   const [cardWidth, setCardWidth] = useState(200)
-  const cardRefs = useRef({})
-  const rafRef = useRef(null)
 
   const toggleFlip = (key) => setFlipped(prev => ({...prev, [key]: !prev[key]}))
 
@@ -1152,44 +1173,6 @@ function ZodiacSection() {
     window.addEventListener('resize', updateWidth)
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
-
-  // 滚动弧形计算 - 直接操作DOM，不触发React渲染
-  const updateArc = useCallback(() => {
-    const container = scrollRef.current
-    if (!container) return
-    if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(() => {
-      const cr = container.getBoundingClientRect()
-      const centerX = cr.left + cr.width / 2
-      const maxDist = cr.width * 0.7
-      Object.entries(cardRefs.current).forEach(([key, el]) => {
-        if (!el) return
-        const rect = el.getBoundingClientRect()
-        const cardCenter = rect.left + rect.width / 2
-        const dist = Math.min(Math.abs(cardCenter - centerX) / maxDist, 2)
-        const yOffset = Math.pow(dist, 1.8) * 25
-        const scale = Math.max(0.55, 1 - dist * 0.3)
-        const brightness = Math.max(0.35, 1 - dist * 0.4)
-        el.style.marginTop = `${yOffset}px`
-        el.style.width = `${cardWidth * scale}px`
-        el.style.zIndex = Math.round(scale * 100)
-        el.style.opacity = brightness
-        el.style.filter = scale < 0.7 ? 'blur(0.3px)' : 'none'
-      })
-    })
-  }, [cardWidth])
-
-  useEffect(() => {
-    const container = scrollRef.current
-    if (!container) return
-    const handler = () => updateArc()
-    container.addEventListener('scroll', handler, { passive: true })
-    updateArc()
-    return () => {
-      container.removeEventListener('scroll', handler)
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    }
-  }, [cardWidth, updateArc])
 
   useEffect(() => {
     if (paused) return
@@ -1264,19 +1247,13 @@ function ZodiacSection() {
               const isActive = activeIdx === i
               const flipKey = `zodiac-${i}`
               const isFlipped = flipped[flipKey] || false
-              // 初始值（无state，首次渲染后由DOM操作更新）
-              const initW = cardWidth
               return (
                 <div key={i}
-                  ref={el => cardRefs.current[i] = el}
-                  className={`shrink-0 rounded-xl overflow-hidden transition-opacity duration-300 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
+                  className={`shrink-0 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer relative ${!z.img ? 'zodiac-placeholder' : ''}`}
                   style={{
-                    width: initW,
+                    width: cardWidth,
                     aspectRatio: '5/7',
                     perspective: '1200px',
-                    marginTop: 0,
-                    zIndex: 100,
-                    opacity: 1,
                   }}
                   onMouseEnter={() => setActiveIdx(i)}
                   onMouseLeave={() => setActiveIdx(null)}
@@ -1393,13 +1370,17 @@ function CTASection() {
         <canvas ref={el => {
           if (!el || el.dataset.done) return
           el.dataset.done = '1'
+          try {
+          const isMobile = window.innerWidth < 768
           const ctx = el.getContext('2d')
+          if (!ctx) return
           let w, h
           const resize = () => { w = el.width = window.innerWidth; h = el.height = window.innerHeight }
           resize()
           window.addEventListener('resize', resize)
+          const count = isMobile ? 8 : 30
           const particles = []
-          for (let i = 0; i < 30; i++) {
+          for (let i = 0; i < count; i++) {
             particles.push({
               x: Math.random() * w, y: Math.random() * h,
               r: Math.random() * 2 + 0.5, a: Math.random() * 0.3 + 0.05,
@@ -1425,6 +1406,7 @@ function CTASection() {
             animId = requestAnimationFrame(draw)
           }
           draw()
+          } catch(e) { /* mobile fallback */ }
         }} className="absolute inset-0 w-full h-full"/>
       </div>
 
@@ -1439,7 +1421,6 @@ function CTASection() {
             style={{
               border:'2px solid rgba(212,175,55,0.25)',
               boxShadow:'0 0 50px rgba(212,175,55,0.1), 0 0 100px rgba(212,175,55,0.04)',
-              animation: 'cardFloat 4s ease-in-out infinite',
             }}>
             <img src={CARDS.star} alt="星星"
               style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
@@ -1481,10 +1462,6 @@ function CTASection() {
       </div>
 
       <style>{`
-        @keyframes cardFloat {
-          0%,100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
         @keyframes goldenPulse {
           0%,100% { opacity:0.08; }
           50% { opacity:0.14; }
