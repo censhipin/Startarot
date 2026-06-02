@@ -906,12 +906,24 @@ function FeaturesSection() {
   const [shuffleIdx, setShuffleIdx] = useState(0)
   const [hasDrawnToday, setHasDrawnToday] = useState(false)
 
-  // 检查每日是否已抽
+  // 检查每日是否已抽 + 恢复抽牌结果
   useEffect(() => {
     const today = new Date().toDateString()
     const lastDraw = localStorage.getItem('starot_lastDraw')
     if (lastDraw === today) {
       setHasDrawnToday(true)
+      const saved = localStorage.getItem('starot_card')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          // 从ALL_CARDS中找到匹配的卡牌（用id匹配）
+          const match = ALL_CARDS.find(c => c.id === parsed.id)
+          if (match) {
+            setDrawnCard(match)
+            setShowResult(true)
+          }
+        } catch(e) {}
+      }
     }
   }, [])
 
@@ -933,6 +945,7 @@ function FeaturesSection() {
         setShowResult(true)
         setHasDrawnToday(true)
         localStorage.setItem('starot_lastDraw', new Date().toDateString())
+        localStorage.setItem('starot_card', JSON.stringify({ id: final.id }))
       }
     }, 100)
   }
@@ -963,7 +976,7 @@ function FeaturesSection() {
             <div className="flex gap-5 items-start">
               {/* 左侧卡牌（加大到135px） */}
               <div className="shrink-0" style={{ width:135 }}>
-                <div onClick={startDraw}
+                <div onClick={() => { if (!hasDrawnToday) startDraw() }}
                   className="rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 relative"
                   style={{
                     aspectRatio:'5/7',
@@ -1003,13 +1016,6 @@ function FeaturesSection() {
                     className="w-full mt-2 py-2 rounded-lg text-xs font-medium tracking-[2px] border-none"
                     style={{ background:'rgba(212,175,55,0.06)', color:'#7A6D8A', border:'1px solid rgba(212,175,55,0.06)', cursor:'not-allowed' }}>
                     今日已抽
-                  </button>
-                )}
-                {showResult && (
-                  <button onClick={() => { setShowResult(false); setDrawnCard(null) }}
-                    className="w-full mt-2 py-1.5 rounded-lg text-[10px] tracking-[2px] cursor-pointer transition-all border-none"
-                    style={{ background:'rgba(212,175,55,0.06)', color:'#7A6D8A', border:'1px solid rgba(212,175,55,0.06)' }}>
-                    再抽一次
                   </button>
                 )}
               </div>
